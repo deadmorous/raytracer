@@ -10,6 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = raytracer
 TEMPLATE = app
+CONFIG += c++11
 
 gcc:QMAKE_CXXFLAGS += -Wno-unused-local-typedefs
 
