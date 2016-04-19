@@ -15,7 +15,8 @@ CONFIG += c++11
 gcc:QMAKE_CXXFLAGS += -Wno-unused-local-typedefs
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    primitive_search.cpp
 
 HEADERS  += mainwindow.h \
     compile_assert.h \
@@ -24,6 +25,12 @@ HEADERS  += mainwindow.h \
     m_const.h \
     surf_mesh_common.h \
     surf_mesh_extruded.h \
-    surf_mesh_revolved.h
+    surf_mesh_revolved.h \
+    primitive.h \
+    ray.h \
+    surface_point.h \
+    bounding_sphere.h \
+    common.h \
+    primitive_search.h
 
 FORMS    += mainwindow.ui
