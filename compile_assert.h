@@ -3,6 +3,9 @@
 #ifndef _COMPILE_ASSERT_H_8A20E4E5_42D0_4d8a_B50D_4326E9683BB8_
 #define _COMPILE_ASSERT_H_8A20E4E5_42D0_4d8a_B50D_4326E9683BB8_
 
+/// \file
+/// \brief Defines compile-time assertion macro.
+
 namespace ctm { namespace cxx {
 template< bool X > struct CompileAssert {};
     } };

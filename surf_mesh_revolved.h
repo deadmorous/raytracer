@@ -5,6 +5,9 @@
 
 #include "surf_mesh_common.h"
 
+/// \file
+/// \brief Utilities for the generation of surface meshes by revolution.
+
 namespace surf_mesh {
 
 class VertexTransform : public std::unary_function< vertex, vertex >

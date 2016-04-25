@@ -12,6 +12,9 @@ TARGET = raytracer
 TEMPLATE = app
 CONFIG += c++11
 
+# TODO: Fix the code and get this warning back
+QMAKE_CXXFLAGS += -Wno-deprecated-declarations
+
 gcc:QMAKE_CXXFLAGS += -Wno-unused-local-typedefs
 
 SOURCES += main.cpp\
@@ -28,9 +31,9 @@ HEADERS  += mainwindow.h \
     surf_mesh_revolved.h \
     primitive.h \
     ray.h \
-    surface_point.h \
     bounding_sphere.h \
     common.h \
-    primitive_search.h
+    primitive_search.h \
+    surface_point.h
 
 FORMS    += mainwindow.ui

@@ -3,6 +3,9 @@
 #ifndef _SURF_MESH_COMMON_H_AB0B81B0_CF3E_424F_9766_BA04D388199F_
 #define _SURF_MESH_COMMON_H_AB0B81B0_CF3E_424F_9766_BA04D388199F_
 
+/// \file
+/// \brief Common declarations used by the surface mesh generation utilities.
+
 #include <vector>
 #include <list>
 #include <algorithm>
@@ -12,6 +15,7 @@
 #include "cxx_exception.h"
 #include <cmath>
 
+/// \brief Namespace to hold functionality specific to the surface mesh generation.
 namespace surf_mesh {
 
 template< class X  >

@@ -3,6 +3,9 @@
 #ifndef _SURF_MESH_EXTRUDED_H_AB0B81B0_CF3E_424F_9766_BA04D388199F_
 #define _SURF_MESH_EXTRUDED_H_AB0B81B0_CF3E_424F_9766_BA04D388199F_
 
+/// \file
+/// \brief Utilities for the generation of surface meshes by extrusion.
+
 #include "surf_mesh_common.h"
 
 namespace surf_mesh {

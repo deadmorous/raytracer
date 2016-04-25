@@ -11,12 +11,19 @@ License agreement can be found in file LICENSE.md in the EquaRes root directory.
 #ifndef _FSMX_H_AB0B81B0_CF3E_424F_9766_BA04D388199F_
 #define _FSMX_H_AB0B81B0_CF3E_424F_9766_BA04D388199F_
 
+/// \file
+/// \brief Fixed-size matrices.
+///
+/// This file defines functionality for working with small dense matrices, as well as
+/// vectors, whose size is known at compile time.
+
 #include <algorithm>
 #include <cmath>
 
 #include "compile_assert.h"
 #include <QtGlobal>
 
+/// \brief Namespace to hold the functionality for fixed-size matrices.
 namespace fsmx {
 
 template< class DL, class DR, class F >
@@ -198,6 +205,12 @@ private:
     accessed_value_type *m_data;
 };
 
+/// \brief Fixed-size matrix.
+///
+/// The \a D template parameter specifies matrix size and how to access
+/// matrix element data. Generally, you would use the Data template
+/// class for this parameter. Some methods return matrices whose \a D
+/// template parameter is a proxy, such as TransposeProxy or SliceProxy.
 template< class D >
 class MX
 {

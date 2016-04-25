@@ -1,5 +1,7 @@
 #include "primitive_search.h"
 
+namespace raytracer {
+
 PrimitiveSearch::PrimitiveSearch()
 {
 }
@@ -10,9 +12,11 @@ void PrimitiveSearch::add(const Primitive *primitive)
     Q_UNUSED(primitive);
 }
 
-Primitive *PrimitiveSearch::find(const Ray& ray) const
+PrimitiveSearch::PrimitiveSequenceRange PrimitiveSearch::find(const Ray& ray) const
 {
     // TODO
     Q_UNUSED(ray);
-    return nullptr;
+    return PrimitiveSequenceRange(PrimitiveSequenceIterator(), PrimitiveSequenceIterator());
 }
+
+} // end namespace raytracer
