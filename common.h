@@ -6,6 +6,7 @@
 
 #include "fsmx.h"
 
+/// \brief Functionality specific to the ray tracer.
 namespace raytracer {
 
 /// \brief 3D vector.
