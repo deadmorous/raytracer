@@ -1,4 +1,5 @@
 #include "primitive_search.h"
+#include "ray.h"
 
 namespace raytracer {
 

@@ -13,13 +13,16 @@ TEMPLATE = app
 CONFIG += c++11
 
 # TODO: Fix the code and get this warning back
-QMAKE_CXXFLAGS += -Wno-deprecated-declarations
+gcc:QMAKE_CXXFLAGS += -Wno-deprecated-declarations
 
 gcc:QMAKE_CXXFLAGS += -Wno-unused-local-typedefs
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    primitive_search.cpp
+    primitive_search.cpp \
+    ray_tracer.cpp \
+    scene.cpp \
+    camera.cpp
 
 HEADERS  += mainwindow.h \
     compile_assert.h \
@@ -34,6 +37,11 @@ HEADERS  += mainwindow.h \
     bounding_sphere.h \
     common.h \
     primitive_search.h \
-    surface_point.h
+    surface_point.h \
+    surface_properties.h \
+    ray_tracer.h \
+    scene.h \
+    camera.h \
+    light_source.h
 
 FORMS    += mainwindow.ui

@@ -34,6 +34,9 @@ inline v2f mkv2f(float x1, float x2)
     return fsmx::mxMake<v2f>(x1, x2);
 }
 
+/// \brief 3x3 matrix.
+typedef fsmx::MX< fsmx::Data<3,3,float> > m3f;
+
 /// \brief A range of a sequence.
 ///
 /// The \a Iterator template parameter is the type of iterator in the original sequence.
