@@ -22,32 +22,32 @@ inline SurfacePoint surfacePoint( float x1=0, float x2=0, float x3=0, float n1=0
     }
 
 /// \brief Returns proxy to surface point that represents its position as a 3D vector.
-inline fsmx::MX< fsmx::SliceProxy< 3, 1, 8, 1, float, float > > sppos( SurfacePoint& v ) {
+inline fsmx::MX< fsmx::SliceProxy< 3, 1, SurfacePoint::Rs, SurfacePoint::Cs, float, float > > sppos( SurfacePoint& v ) {
     return v.block< 3, 1 >( 0, 0 );
     }
 
 /// \brief Returns proxy to surface point that represents its position as a 3D vector (overload for const argument).
-inline fsmx::MX< fsmx::SliceProxy< 3, 1, 8, 1, float, const float > > sppos( const SurfacePoint& v ) {
+inline fsmx::MX< fsmx::SliceProxy< 3, 1, SurfacePoint::Rs, SurfacePoint::Cs, float, const float > > sppos( const SurfacePoint& v ) {
     return v.block< 3, 1 >( 0, 0 );
     }
 
 /// \brief Returns proxy to surface point that represents its surface normal vector as a 3D vector.
-inline fsmx::MX< fsmx::SliceProxy< 3, 1, 8, 1, float, float > > spnormal( SurfacePoint& v ) {
+inline fsmx::MX< fsmx::SliceProxy< 3, 1, SurfacePoint::Rs, SurfacePoint::Cs, float, float > > spnormal( SurfacePoint& v ) {
     return v.block< 3, 1 >( 3, 0 );
     }
 
 /// \brief Returns proxy to surface point that represents its surface normal vector as a 3D vector (overload for const argument).
-inline fsmx::MX< fsmx::SliceProxy< 3, 1, 8, 1, float, const float > > spnormal( const SurfacePoint& v ) {
+inline fsmx::MX< fsmx::SliceProxy< 3, 1, SurfacePoint::Rs, SurfacePoint::Cs, float, const float > > spnormal( const SurfacePoint& v ) {
     return v.block< 3, 1 >( 3, 0 );
     }
 
 /// \brief Returns proxy to surface point that represents its texture coordinates as a 2D vector.
-inline fsmx::MX< fsmx::SliceProxy< 2, 1, 8, 1, float, float > > sptex( SurfacePoint& v ) {
+inline fsmx::MX< fsmx::SliceProxy< 2, 1, SurfacePoint::Rs, SurfacePoint::Cs, float, float > > sptex( SurfacePoint& v ) {
     return v.block< 2, 1 >( 6, 0 );
     }
 
 /// \brief Returns proxy to surface point that represents its texture coordinates as a 2D vector (overload for const argument).
-inline fsmx::MX< fsmx::SliceProxy< 2, 1, 8, 1, float, const float > > sptex( const SurfacePoint& v ) {
+inline fsmx::MX< fsmx::SliceProxy< 2, 1, SurfacePoint::Rs, SurfacePoint::Cs, float, const float > > sptex( const SurfacePoint& v ) {
     return v.block< 2, 1 >( 6, 0 );
     }
 
