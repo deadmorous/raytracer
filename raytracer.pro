@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     primitive_search.cpp \
     ray_tracer.cpp \
     scene.cpp \
-    camera.cpp
+    camera.cpp \
+    primitives/sphere.cpp
 
 HEADERS  += mainwindow.h \
     compile_assert.h \
@@ -42,6 +43,7 @@ HEADERS  += mainwindow.h \
     ray_tracer.h \
     scene.h \
     camera.h \
-    light_source.h
+    light_source.h \
+    primitives/sphere.h
 
 FORMS    += mainwindow.ui

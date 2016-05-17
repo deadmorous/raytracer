@@ -30,8 +30,8 @@ struct Ray
         int generation) :
         origin(origin),
         dir(dir),
-        color(color),
-        generation(generation)
+        generation(generation),
+        color(color)
     {}
 };
 
