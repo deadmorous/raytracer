@@ -13,7 +13,6 @@ public:
 
     bool collisionTest(SurfacePoint& p, const Ray& ray) const;
     BoundingSphere boundingSphere() const;
-    const SurfaceProperties *surfaceProperties() const;
 
 private:
     v3f center;

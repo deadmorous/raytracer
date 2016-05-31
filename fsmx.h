@@ -55,6 +55,19 @@ void memberwise(D& x, F func)
     }
 }
 
+template< class D, class F >
+void constMemberwise(D& x, F func)
+{
+    typedef typename D::value_type T;
+    const T *pRow = x.data();
+    for (int r=0; r<D::Nr; ++r, pRow+=D::Rs)
+    {
+        const T *p = pRow;
+        for (int c=0; c<D::Nc; ++c, p+=D::Cs)
+            func(*p);
+    }
+}
+
 template< class T > inline void assign(T& left, const T& right) { left = right; }
 template< class T > inline void addAssign(T& left, const T& right) { left += right; }
 template< class T > inline void subAssign(T& left, const T& right) { left -= right; }
@@ -464,6 +477,17 @@ public:
 
     template< class D2 >
     inline MX< fsmx::Data<D::Nr, D2::Nc, typename D::value_type> > gaussSolve(const MX<D2>& f) const;
+
+    typename D::value_type norm2Square() const {
+        auto result = typename std::remove_const<value_type>::type();
+        constMemberwise(
+            m_data,
+            [&result](const typename D::value_type& x) { result += x*x; });
+        return result;
+    }
+    typename D::value_type norm2() const {
+        return sqrt(norm2Square());
+    }
 
 private:
     D m_data;

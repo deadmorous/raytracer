@@ -5,10 +5,9 @@
 /// \brief Defines the BoundingSphere data structure.
 
 #include "common.h"
+#include "ray.h"
 
 namespace raytracer {
-
-struct Ray;
 
 /// \brief Bounding sphere.
 ///
@@ -36,7 +35,11 @@ struct BoundingSphere
     /// \return true if this bounding sphere collides with ray \a ray,
     /// false otherwise.
     bool collidesWith(const Ray& ray) const {
-        return false;   // TODO
+        auto d = ray.origin - center;
+        float b = d.T()*ray.dir;
+        float c = d.T()*d - radius*radius;
+        float D = b*b - c;
+        return D >= 0   &&   b + sqrt(D) >= 0;
     }
 };
 

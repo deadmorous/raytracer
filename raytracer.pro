@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     ray_tracer.cpp \
     scene.cpp \
     camera.cpp \
-    primitives/sphere.cpp
+    primitives/sphere.cpp \
+    primitive.cpp
 
 HEADERS  += mainwindow.h \
     compile_assert.h \

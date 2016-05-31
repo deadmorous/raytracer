@@ -2,7 +2,7 @@
 #define PRIMITIVE_H
 
 /// \file
-/// \brief Defines the interface for scene primitive.
+/// \brief Defines the base class for scene primitive.
 
 #include "common.h"
 #include "surface_point.h"
@@ -30,7 +30,7 @@ struct Primitive
     virtual BoundingSphere boundingSphere() const = 0;
 
     /// \brief Returns primitive surface properties
-    virtual const SurfaceProperties *surfaceProperties() const = 0;
+    const SurfaceProperties *surfaceProperties() const;
 };
 
 } // end namespace raytracer
