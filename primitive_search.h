@@ -10,7 +10,7 @@
 namespace raytracer {
 
 struct Ray;
-struct Primitive;
+class Primitive;
 
 /// \brief Class that provides the functionality for finding primitives that collide with the specified ray.
 class PrimitiveSearch

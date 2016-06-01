@@ -8,7 +8,7 @@
 
 namespace raytracer {
 
-struct Primitive;
+class Primitive;
 
 /// \brief Class representing the camera.
 class Camera

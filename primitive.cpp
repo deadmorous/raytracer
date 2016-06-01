@@ -5,10 +5,19 @@
 
 namespace raytracer {
 
-/// \brief Returns primitive surface properties
-const SurfaceProperties *Primitive::surfaceProperties() const
+void Primitive::setSurfaceProperties(const SurfaceProperties::Ptr& surfaceProperties)
 {
-    return nullptr; // TODO
+    m_surfaceProperties = surfaceProperties;
+}
+
+SurfaceProperties::Ptr Primitive::surfaceProperties() const
+{
+    return m_surfaceProperties;
+}
+
+void Primitive::read(const QVariant& v)
+{
+    readOptionalTypedProperty(m_surfaceProperties, v, "surf_prop");
 }
 
 } // end namespace raytracer

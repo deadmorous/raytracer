@@ -7,16 +7,19 @@ namespace raytracer {
 
 class Sphere : public Primitive
 {
+    DECL_GENERATOR(Sphere)
 public:
     Sphere();
-    Sphere(const v3f& center, float radius);
+    Sphere(const v3f& m_center, float m_radius);
 
     bool collisionTest(SurfacePoint& p, const Ray& ray) const;
     BoundingSphere boundingSphere() const;
 
+    void read(const QVariant& v);
+
 private:
-    v3f center;
-    float radius;
+    v3f m_center;
+    float m_radius;
 };
 
 } // end namespace raytracer

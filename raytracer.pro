@@ -24,7 +24,9 @@ SOURCES += main.cpp\
     scene.cpp \
     camera.cpp \
     primitives/sphere.cpp \
-    primitive.cpp
+    primitive.cpp \
+    json_file_reader.cpp \
+    json_parser.cpp
 
 HEADERS  += mainwindow.h \
     compile_assert.h \
@@ -45,6 +47,10 @@ HEADERS  += mainwindow.h \
     scene.h \
     camera.h \
     light_source.h \
-    primitives/sphere.h
+    primitives/sphere.h \
+    serial.h \
+    factory.h \
+    json_file_reader.h \
+    json_parser.h
 
 FORMS    += mainwindow.ui

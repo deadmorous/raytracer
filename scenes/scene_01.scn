@@ -1,0 +1,10 @@
+{
+    primitives: [
+        ['Sphere', {
+            center: [1, 2, 3],
+            radius: 4.56
+        }]
+    ],
+    lights: []
+}
+

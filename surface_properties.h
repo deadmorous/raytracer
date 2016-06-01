@@ -5,13 +5,19 @@
 /// \brief Declaration of the SurfaceProperties interface.
 
 #include "surface_point.h"
+#include "factory.h"
+#include "serial.h"
+
+#include <memory>
 
 namespace raytracer {
 
 struct Ray;
 class RayTracer;
 
-struct SurfaceProperties
+struct SurfaceProperties :
+        public Readable,
+        public FactoryMixin<SurfaceProperties>
 {
     virtual ~SurfaceProperties() {}
     virtual void processCollision(

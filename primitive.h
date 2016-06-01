@@ -5,17 +5,21 @@
 /// \brief Defines the base class for scene primitive.
 
 #include "common.h"
-#include "surface_point.h"
+#include "surface_properties.h"
+#include "factory.h"
+#include "serial.h"
 
 namespace raytracer {
 
 struct Ray;
 struct BoundingSphere;
-struct SurfaceProperties;
 
 /// \brief Interface for scene primitive.
-struct Primitive
+class Primitive :
+    public Readable,
+    public FactoryMixin<Primitive>
 {
+public:
     /// \brief Virtual destructor.
     virtual ~Primitive() {}
 
@@ -29,8 +33,17 @@ struct Primitive
     /// \brief Returns bounding sphere for this primitive.
     virtual BoundingSphere boundingSphere() const = 0;
 
+    /// \brief Sets primitive surface properties
+    void setSurfaceProperties(const SurfaceProperties::Ptr& surfaceProperties);
+
     /// \brief Returns primitive surface properties
-    const SurfaceProperties *surfaceProperties() const;
+    SurfaceProperties::Ptr surfaceProperties() const;
+
+    /// @brief Reads surface properties, if any
+    void read(const QVariant& v);
+
+private:
+    SurfaceProperties::Ptr m_surfaceProperties;
 };
 
 } // end namespace raytracer

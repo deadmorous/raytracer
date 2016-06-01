@@ -16,8 +16,8 @@ RayTracer& RayTracer::setScene(const Scene& scene)
 {
     m_scene = scene;
     m_psearch = PrimitiveSearch();
-    for (const Primitive *p : m_scene.primitives())
-        m_psearch.add(p);
+    for (Primitive::Ptr p : m_scene.primitives())
+        m_psearch.add(p.get());
     return *this;
 }
 

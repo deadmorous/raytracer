@@ -6,14 +6,14 @@
 
 #include <vector>
 #include "primitive.h"
+#include "light_source.h"
 
 namespace raytracer {
 
-struct Primitive;
 struct LightSource;
 
 /// \brief Class holding a scene to be visualized.
-class Scene
+class Scene : public Readable
 {
 public:
     Scene();
@@ -22,13 +22,19 @@ public:
     ///
     /// \note The scene is responsible for the lifetime of all
     /// its primitives.
-    std::vector<const Primitive*> primitives() const;
+    const std::vector<Primitive::Ptr>& primitives() const;
 
     /// \brief Returns all light sources of the scene.
     ///
     /// \note The scene is responsible for the lifetime of all
     /// its light sources.
-    std::vector<const LightSource*> lightSources() const;
+    const std::vector<LightSource::Ptr>& lightSources() const;
+
+    void read(const QVariant& v);
+
+private:
+    std::vector<Primitive::Ptr> m_primitives;
+    std::vector<LightSource::Ptr> m_lightSources;
 };
 
 } // end namespace raytracer
