@@ -1,12 +1,12 @@
+/// \file
+/// \brief Declaration of transformation matrix utility classes.
+
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
 #include "common.h"
 #include "factory.h"
 #include "serial.h"
-
-/// \file
-/// \brief Declaration of transformation matrix utility classes.
 
 namespace raytracer {
 
@@ -22,6 +22,8 @@ class Translate : public Transform
 {
     DECL_GENERATOR(Translate)
 public:
+    Translate();
+    explicit Translate(const v3f& translation);
     void read(const QVariant& v);
     void operator()(m4f& transform) const;
 

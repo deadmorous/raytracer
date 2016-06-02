@@ -1,8 +1,8 @@
-#ifndef SIMPLE_CAMERA_H
-#define SIMPLE_CAMERA_H
-
 /// \file
 /// \brief Declaration of the SimpleCamera class.
+
+#ifndef SIMPLE_CAMERA_H
+#define SIMPLE_CAMERA_H
 
 #include "camera.h"
 
@@ -19,7 +19,7 @@ public:
         ///
         /// \sa gluPerspective().
         float fovy;
-        /// \brief Specifies the aspect ratio that determines the field of view in the x direction.
+        /// \brief Specifies the aspect ratio that determines the field of view in the y direction.
         ///
         /// The aspect ratio is the ratio of x (width) to y (height).
         /// \sa gluPerspective().
@@ -46,6 +46,14 @@ public:
             resx(resx),
             resy(resy)
         {}
+
+        float screenWidth() const {
+            return dist * fovy * aspect;
+        }
+
+        float screenHeight() const {
+            return dist * aspect;
+        }
     };
 
     /// \brief Default constructor
@@ -67,6 +75,7 @@ private:
     Primitive::Ptr m_primitive;
     Geometry m_geometry;
     QPixmap m_pixmap;
+    std::vector< v3f > m_canvas;
 };
 
 } // end namespace raytracer

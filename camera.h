@@ -36,7 +36,6 @@ public:
 
 private:
     m4f m_transform;
-
 };
 
 } // end namespace raytracer

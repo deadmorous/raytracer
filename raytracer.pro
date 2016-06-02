@@ -29,7 +29,9 @@ SOURCES += main.cpp\
     json_parser.cpp \
     primitives/rectangle.cpp \
     transform.cpp \
-    simple_camera.cpp
+    simple_camera.cpp \
+    lights/point_light.cpp \
+    light_source.cpp
 
 HEADERS  += mainwindow.h \
     compile_assert.h \
@@ -57,6 +59,7 @@ HEADERS  += mainwindow.h \
     json_parser.h \
     primitives/rectangle.h \
     transform.h \
-    simple_camera.h
+    simple_camera.h \
+    lights/point_light.h
 
 FORMS    += mainwindow.ui

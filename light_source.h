@@ -18,8 +18,21 @@ struct LightSource :
         public FactoryMixin<LightSource>
 {
 public:
-    typedef std::shared_ptr<LightSource> Ptr;
-    virtual void emitRays(int count, RayTracer& rayTracer) const;
+    LightSource();
+
+    virtual void emitRays(int count, RayTracer& rayTracer) const = 0;
+
+    /// \brief Returns primitive transformation matrix.
+    const m4f& transform() const;
+
+    /// \brief Sets primitive transformation matrix.
+    void setTransform(const m4f &transform);
+
+    /// \brief Reads light source transformation.
+    void read(const QVariant& v);
+
+private:
+    m4f m_transform;
 };
 
 } // end namespace raytracer

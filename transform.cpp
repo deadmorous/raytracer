@@ -1,11 +1,21 @@
-#include "transform.h"
-
 /// \file
 /// \brief Implementation of transformation matrix utility classes.
+
+#include "transform.h"
 
 namespace raytracer {
 
 REGISTER_GENERATOR(Translate)
+
+Translate::Translate() :
+    m_translation(fsmx::zero<v3f>())
+{
+}
+
+Translate::Translate(const v3f& translation) :
+    m_translation(translation)
+{
+}
 
 void Translate::read(const QVariant& v)
 {
