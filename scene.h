@@ -11,6 +11,7 @@
 namespace raytracer {
 
 struct LightSource;
+struct Camera;
 
 /// \brief Class holding a scene to be visualized.
 class Scene : public Readable
@@ -29,6 +30,8 @@ public:
     /// \note The scene is responsible for the lifetime of all
     /// its light sources.
     const std::vector<LightSource::Ptr>& lightSources() const;
+
+    // Camera
 
     void read(const QVariant& v);
 

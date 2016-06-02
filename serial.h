@@ -125,6 +125,17 @@ struct Readable
         return readProperty(safeVariantMap(v), name);
     }
 
+    template< class Interface >
+    static void readTypedProperty(
+            std::shared_ptr<Interface>& dst,
+            const QVariantMap& m,
+            const QString& name)
+    {
+        readProperty(m, name, [&dst](const QVariant& v) {
+            dst = readTypedInstance<Interface>(v);
+        });
+    }
+
     template< class T >
     static void readProperty(
             T& dst,
@@ -217,12 +228,21 @@ struct Readable
     template< class Interface >
     static bool readOptionalTypedProperty(
             std::shared_ptr<Interface>& dst,
+            const QVariantMap& m,
+            const QString& name)
+    {
+        return readOptionalProperty(m, name, [&dst](const QVariant& v) {
+            dst = readTypedInstance<Interface>(v);
+        });
+    }
+
+    template< class Interface >
+    static bool readOptionalTypedProperty(
+            std::shared_ptr<Interface>& dst,
             const QVariant& v,
             const QString& name)
     {
-        return readOptionalProperty(v, name, [&dst](const QVariant& v) {
-            dst = readTypedInstance<Interface>(v);
-        });
+        return readOptionalTypedProperty(dst, safeVariantMap(v), name);
     }
 };
 

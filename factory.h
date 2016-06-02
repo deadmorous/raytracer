@@ -17,6 +17,8 @@ public:
     typedef std::shared_ptr<Interface> Ptr;
     typedef std::function<Ptr()> GeneratorFunc;
 
+    virtual ~FactoryMixin() {}
+
     static Ptr newInstance(const QString& typeId)
     {
         return generator(typeId)();

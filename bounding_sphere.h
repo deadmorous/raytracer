@@ -22,9 +22,16 @@ struct BoundingSphere
     BoundingSphere() {}
 
 
+    /// \brief Constructor that sets center coordinates to zero.
+    /// \param radius Initializer for #radius.
+    BoundingSphere(float radius) :
+        center(fsmx::zero<v3f>()),
+        radius(radius)
+    {}
+
     /// \brief Constructor.
-    /// \param center Initializer for #center
-    /// \param radius Initializer for #radius
+    /// \param center Initializer for #center.
+    /// \param radius Initializer for #radius.
     BoundingSphere(const v3f& center, float radius) :
         center(center),
         radius(radius)
@@ -36,8 +43,8 @@ struct BoundingSphere
     /// false otherwise.
     bool collidesWith(const Ray& ray) const {
         auto d = ray.origin - center;
-        float b = d.T()*ray.dir;
-        float c = d.T()*d - radius*radius;
+        float b = dot(d, ray.dir);
+        float c = dot(d, d) - radius*radius;
         float D = b*b - c;
         return D >= 0   &&   b + sqrt(D) >= 0;
     }

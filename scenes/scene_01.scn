@@ -1,10 +1,26 @@
 {
-    primitives: [
-        ['Sphere', {
-            center: [1, 2, 3],
-            radius: 4.56
-        }]
-    ],
-    lights: []
+    scene: {
+        primitives: [
+            ['Sphere', {
+                center: [1, 2, 3],
+                radius: 4.56,
+                transform: [
+                    'CombinedTransform', [
+                        ['Translate', [11,22,33]],
+                        ['Rotate', {
+                            axis: [1, 0, 0],
+                            angle: 90
+                        }],
+                        ['Scale', 0.5],
+                    ]
+                ]
+            }]
+        ],
+        lights: []
+    },
+    camera: ['SimpleCamera', {
+        transform: [
+        'Translate', [0,0,-3],
+        ]
+    }]
 }
-

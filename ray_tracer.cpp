@@ -28,14 +28,14 @@ Scene RayTracer::scene() const
 }
 
 /// \brief Sets camera and returns *this.
-RayTracer& RayTracer::setCamera(const Camera& camera)
+RayTracer& RayTracer::setCamera(const Camera::Ptr &camera)
 {
     m_camera = camera;
     return *this;
 }
 
 /// \brief Returns camera.
-Camera RayTracer::camera() const
+Camera::Ptr RayTracer::camera() const
 {
     return m_camera;
 }
@@ -53,6 +53,13 @@ void RayTracer::processRay(const Ray& ray)
             break;
         }
     }
+}
+
+void RayTracer::read(const QVariant& v)
+{
+    QVariantMap m = safeVariantMap(v);
+    m_scene.read(readProperty(m, "scene"));
+    readTypedProperty(m_camera, m, "camera");
 }
 
 } // end namespace raytracer

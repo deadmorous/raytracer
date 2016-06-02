@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = raytracer
 TEMPLATE = app
-CONFIG += c++11
+CONFIG += c++14
 
 # TODO: Fix the code and get this warning back
 gcc:QMAKE_CXXFLAGS += -Wno-deprecated-declarations
@@ -26,7 +26,10 @@ SOURCES += main.cpp\
     primitives/sphere.cpp \
     primitive.cpp \
     json_file_reader.cpp \
-    json_parser.cpp
+    json_parser.cpp \
+    primitives/rectangle.cpp \
+    transform.cpp \
+    simple_camera.cpp
 
 HEADERS  += mainwindow.h \
     compile_assert.h \
@@ -51,6 +54,9 @@ HEADERS  += mainwindow.h \
     serial.h \
     factory.h \
     json_file_reader.h \
-    json_parser.h
+    json_parser.h \
+    primitives/rectangle.h \
+    transform.h \
+    simple_camera.h
 
 FORMS    += mainwindow.ui

@@ -50,6 +50,7 @@ QVariant JsonParser::parse(int& pos) const
             pos += rxNum.matchedLength();
             return rxNum.capturedTexts()[0].toDouble();
         }
+
         throwUnexpectedInput(pos);
         return QVariant();
     }
@@ -179,11 +180,31 @@ QString JsonParser::parseName(int& pos) const
 
 void JsonParser::skipWhitespace(int& pos) const
 {
-    QRegExp rxWhitespace("^\\s*");
-    int index = rxWhitespace.indexIn(m_json, pos, QRegExp::CaretAtOffset);
-    Q_ASSERT(index == pos);
-    Q_UNUSED(index);
-    pos += rxWhitespace.matchedLength();
+    bool commentSkipped;
+    do {
+        commentSkipped = false;
+
+        // Try to parse C comment
+        QRegExp rxCComment("^/\\*.*\\*/");
+        if (rxCComment.indexIn(m_json, pos, QRegExp::CaretAtOffset) == pos) {
+            pos += rxCComment.matchedLength();
+            commentSkipped = true;
+        }
+
+        // Try to parse C++ comment
+        QRegExp rxCppComment("^//[^\n]*(\n|$)");
+        if (rxCppComment.indexIn(m_json, pos, QRegExp::CaretAtOffset) == pos) {
+            pos += rxCppComment.matchedLength();
+            commentSkipped = true;
+        }
+
+        QRegExp rxWhitespace("^\\s*");
+        int index = rxWhitespace.indexIn(m_json, pos, QRegExp::CaretAtOffset);
+        Q_ASSERT(index == pos);
+        Q_UNUSED(index);
+        pos += rxWhitespace.matchedLength();
+    }
+    while(commentSkipped);
 }
 
 void JsonParser::checkHasInput(int pos) const {

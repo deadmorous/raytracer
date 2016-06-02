@@ -27,6 +27,22 @@ License agreement can be found in file LICENSE.md in the EquaRes root directory.
 namespace fsmx {
 
 template< class DL, class DR, class F >
+void memberwise(const DL& left, const DR& right, F func)
+{
+    COMPILE_ASSERT(static_cast<int>(DL::Nr) == DR::Nr && static_cast<int>(DL::Nc) == DR::Nc);
+    typedef typename DL::value_type T;
+    const T *pLeftRow = left.data();
+    const T *pRightRow = right.data();
+    for (int r=0; r<DL::Nr; ++r, pLeftRow+=DL::Rs, pRightRow+=DR::Rs)
+    {
+        const T *pLeft = pLeftRow;
+        const T *pRight = pRightRow;
+        for (int c=0; c<DL::Nc; ++c, pLeft+=DL::Cs, pRight+=DR::Cs)
+            func(*pLeft, *pRight);
+    }
+}
+
+template< class DL, class DR, class F >
 void memberwise(DL& left, const DR& right, F func)
 {
     COMPILE_ASSERT(static_cast<int>(DL::Nr) == DR::Nr && static_cast<int>(DL::Nc) == DR::Nc);
@@ -482,11 +498,21 @@ public:
         auto result = typename std::remove_const<value_type>::type();
         constMemberwise(
             m_data,
-            [&result](const typename D::value_type& x) { result += x*x; });
+            [&result](const value_type& x) { result += x*x; });
         return result;
     }
     typename D::value_type norm2() const {
         return sqrt(norm2Square());
+    }
+
+    inline value_type trace() const
+    {
+        COMPILE_ASSERT(Nr == Nc);
+        auto result = typename std::remove_const<value_type>::type();
+        constMemberwise(diag().data(), [&result](const value_type& x) {
+            result += x;
+        });
+        return result;
     }
 
 private:
@@ -905,6 +931,37 @@ template< class M > inline M mxMake(CTM_FSMX_R x1, CTM_FSMX_R x2, CTM_FSMX_R x3,
     M m;
     mxSet(m, x1, x2, x3, x4, x5, x6, x7, x8, x9);
     return m;
+}
+
+template< class M > inline M zero()
+{
+    M m;
+    m.fill(static_cast<typename M::value_type>(0));
+    return m;
+}
+
+template< class M > inline M identity()
+{
+    COMPILE_ASSERT(M::Nr == M::Nc);
+    M m;
+    m.fill(static_cast<typename M::value_type>(0));
+    m.diag().fill(static_cast<typename M::value_type>(1));
+    return m;
+}
+
+template< class D1, class D2 >
+inline typename D1::value_type dot(const MX<D1>& l, const MX<D2>& r)
+{
+    COMPILE_ASSERT(
+                (D1::Nr == 1   ||   D1::Nc == 1)   &&
+                (D2::Nr == 1   ||   D2::Nc == 1)   &&
+                (static_cast<int>(D1::Length) == static_cast<int>(D2::Length)));
+
+    auto result = typename std::remove_const<typename D1::value_type>::type();
+    memberwise(l.data(), r.data(), [&result](const typename D1::value_type& xl, const typename D2::value_type& xr) {
+        result += xl*xr;
+    });
+    return result;
 }
 
 #undef CTM_FSMX_R

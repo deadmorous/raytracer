@@ -19,7 +19,6 @@ struct LightSource :
 {
 public:
     typedef std::shared_ptr<LightSource> Ptr;
-    virtual ~LightSource() {}
     virtual void emitRays(int count, RayTracer& rayTracer) const;
 };
 

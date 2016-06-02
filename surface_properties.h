@@ -19,7 +19,6 @@ struct SurfaceProperties :
         public Readable,
         public FactoryMixin<SurfaceProperties>
 {
-    virtual ~SurfaceProperties() {}
     virtual void processCollision(
             const Ray& ray,
             const SurfacePoint& surfacePoint,

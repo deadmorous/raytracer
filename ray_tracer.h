@@ -7,11 +7,13 @@
 #include "scene.h"
 #include "camera.h"
 #include "primitive_search.h"
+#include "serial.h"
 
 namespace raytracer {
 
 /// @brief Class responsible for the ray tracing algorithm in general.
-class RayTracer
+class RayTracer :
+        public Readable
 {
 public:
     RayTracer();
@@ -23,17 +25,19 @@ public:
     Scene scene() const;
 
     /// \brief Sets camera and returns *this.
-    RayTracer& setCamera(const Camera& camera);
+    RayTracer& setCamera(const Camera::Ptr& camera);
 
     /// \brief Returns camera.
-    Camera camera() const;
+    Camera::Ptr camera() const;
 
     /// \brief Processes the ray specified.
     void processRay(const Ray& ray);
 
+    void read(const QVariant& v);
+
 private:
     Scene m_scene;
-    Camera m_camera;
+    Camera::Ptr m_camera;
 
     PrimitiveSearch m_psearch;
 };
