@@ -13,7 +13,7 @@ namespace raytracer {
 class RayTracer;
 
 /// \brief The light source interface.
-struct LightSource :
+class LightSource :
         public Readable,
         public FactoryMixin<LightSource>
 {

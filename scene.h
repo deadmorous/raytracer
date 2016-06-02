@@ -10,8 +10,8 @@
 
 namespace raytracer {
 
-struct LightSource;
-struct Camera;
+class LightSource;
+class Camera;
 
 /// \brief Class holding a scene to be visualized.
 class Scene : public Readable

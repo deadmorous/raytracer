@@ -4,6 +4,7 @@
 #include "simple_camera.h"
 #include "primitives/rectangle.h"
 #include "transform.h"
+#include "ray_tracer.h"
 
 namespace raytracer {
 

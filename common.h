@@ -73,29 +73,29 @@ inline m3f dyad(const v3f& left, const v3f& right) {
 }
 
 /// \brief Returns the upper-left 3x3 block of 4x4 matrix (the affine transformation).
-inline decltype(auto) affine(m4f& t) {
+inline auto affine(m4f& t) -> decltype(t.block<3,3>(0,0)) {
     return t.block< 3, 3 >(0, 0);
 }
 
 /// \brief Returns the upper-left 3x3 block of 4x4 matrix (the affine transformation), overload.
-inline decltype(auto) affine(const m4f& t) {
-    return affine(const_cast<m4f&>(t));
+inline auto affine(const m4f& t) -> decltype(t.block<3,3>(0,0)) {
+    return t.block< 3, 3 >(0, 0);
 }
 
 /// \brief Returns the upper-right 3x1 block of 4x4 matrix (the translation).
-inline decltype(auto) translation(m4f& t) {
+inline auto translation(m4f& t) -> decltype(t.block<3,1>(0,3)) {
     return t.block< 3, 1 >(0, 3);
 }
 
 /// \brief Returns the upper-right 3x1 block of 4x4 matrix (the translation), overload.
-inline decltype(auto) translation(const m4f& t) {
-    return translation(const_cast<m4f&>(t));
+inline auto translation(const m4f& t) -> decltype(t.block<3,1>(0,3)) {
+    return t.block< 3, 1 >(0, 3);
 }
 
 /// \brief Returns true if \a t has shear, false otherwise.
 inline bool hasShear(const m3f& t)
 {
-    const float relTol = 1e-7;
+    const float relTol = 1e-7f;
     m3f tt = t*t.T();
     float x = tt.trace() / 3.f;
     const float *d = tt.data().data();

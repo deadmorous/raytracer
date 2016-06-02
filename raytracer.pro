@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = raytracer
 TEMPLATE = app
-CONFIG += c++14
+CONFIG += c++11
 
 # TODO: Fix the code and get this warning back
 gcc:QMAKE_CXXFLAGS += -Wno-deprecated-declarations
