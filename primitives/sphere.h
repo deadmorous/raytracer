@@ -12,7 +12,7 @@ public:
     Sphere();
     Sphere(float radius);
 
-    bool collisionTest(SurfacePoint& p, const Ray& ray) const;
+    bool collisionTest(float &rayParam, SurfacePoint& p, const Ray& ray) const;
     BoundingSphere boundingSphere() const;
 
     void read(const QVariant& v);

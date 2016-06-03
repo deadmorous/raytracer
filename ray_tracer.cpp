@@ -3,12 +3,13 @@
 
 #include "ray_tracer.h"
 #include "surface_properties.h"
+#include "ray.h"
 
 namespace raytracer {
 
-RayTracer::RayTracer()
+RayTracer::RayTracer() :
+    m_collisionDataBufferSize(0)
 {
-
 }
 
 RayTracer& RayTracer::setScene(const Scene& scene)
@@ -44,16 +45,41 @@ RayTracer::Options RayTracer::options() const {
 
 void RayTracer::processRay(const Ray& ray)
 {
+    if (ray.generation > m_options.reflectionLimit)
+        return;
+    if (ray.color[0] + ray.color[1] + ray.color[2] < m_options.intensityThreshold)
+        return;
+
+    // Find candidates for collisions
     auto r = m_psearch.find(ray);
+
+    // Check for collision; collect positive results in cdbuf
+    auto cdbuf = collisionData();
     for (auto it=r.begin; it!=r.end; ++it) {
-        const Primitive* p = *it;
-        SurfacePoint sp;
-        if (p->collisionTest(sp, ray))
-        {
-            p->surfaceProperties()->processCollision(ray, sp, *this);
-            break;
-        }
+        // Allocate buffer element if there's no collision
+        CollisionData& cd = cdbuf.push();
+
+        // Check for collision
+        cd.primitive = *it;
+        bool hasCollision = cd.primitive->collisionTest(cd.rayParam, cd.surfacePoint, ray);
+
+        // Discard collision if it occurs too close to ray origin
+        // (that could mean collision with object just emitted the ray)
+        if (hasCollision && cd.rayParam < m_options.rayParamThreshold)
+            hasCollision = false;
+
+        // Deallocate buffer element if there's no collision
+        if (!hasCollision)
+            cdbuf.pop();
     }
+
+    if (cdbuf.empty())
+        // No collisions occurred
+        return;
+
+    // Process nearest collision
+    const CollisionData& cd0 = *std::min(cdbuf.begin(), cdbuf.end());
+    cd0.primitive->surfaceProperties()->processCollision(ray, cd0.surfacePoint, *this);
 }
 
 void RayTracer::read(const QVariant& v)
@@ -66,8 +92,9 @@ void RayTracer::read(const QVariant& v)
     readOptionalProperty(m, "options", [this](const QVariant& v) {
         QVariantMap m = safeVariantMap(v);
         readOptionalProperty(m_options.totalRayLimit, m, "max_rays");
-        readOptionalProperty(m_options.reflectionLimit, m, "max_reflactions");
+        readOptionalProperty(m_options.reflectionLimit, m, "max_reflections");
         readOptionalProperty(m_options.intensityThreshold, m, "intensity_threshold");
+        readOptionalProperty(m_options.rayParamThreshold, m, "ray_param_threshold");
     });
 }
 

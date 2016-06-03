@@ -28,7 +28,7 @@
     }],
     options: {
         max_rays: 100000,
-        max_reflactions: 10,
+        max_reflections: 10,
         intensity_threshold: 0.1
     }
 }

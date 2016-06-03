@@ -21,8 +21,9 @@ public:
 private:
     Ui::MainWindow *ui;
 
-private slots:
+public slots:
     void openScene();
+    void openScene(const QString& fileName);
     void saveRayTracerImage();
 
 private:

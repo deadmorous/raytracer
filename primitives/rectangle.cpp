@@ -18,7 +18,7 @@ Rectangle::Rectangle(float width, float height) :
 {
 }
 
-bool Rectangle::collisionTest(SurfacePoint& p, const Ray& ray) const
+bool Rectangle::collisionTest(float& rayParam, SurfacePoint& p, const Ray& ray) const
 {
     m4f T = transform();
     v3f center = translation(T);
@@ -30,10 +30,10 @@ bool Rectangle::collisionTest(SurfacePoint& p, const Ray& ray) const
     float en = dot(ray.dir, n);
     if (en == 0.f)
         return false;
-    float t = dot((center - ray.origin), n) / en;
-    if (t <= 0.f)
+    rayParam = dot((center - ray.origin), n) / en;
+    if (rayParam <= 0.f)
         return false;
-    v3f r = ray.origin + t*ray.dir;
+    v3f r = ray.origin + rayParam*ray.dir;
     v3f dr = r - center;
     float tex1 = dot(A.col(0), dr) / (0.5f*m_width*sf);
     if (fabs(tex1) > 1.f)

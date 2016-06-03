@@ -2,6 +2,8 @@
 /// \brief Implementation of the BlackSurface class.
 
 #include "black_surface.h"
+#include "ray.h"
+#include "ray_tracer.h"
 
 namespace raytracer {
 

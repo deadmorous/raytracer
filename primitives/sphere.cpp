@@ -16,7 +16,7 @@ Sphere::Sphere(float radius) :
 {
 }
 
-bool Sphere::collisionTest(SurfacePoint& p, const Ray& ray) const
+bool Sphere::collisionTest(float& rayParam, SurfacePoint& p, const Ray& ray) const
 {
     m4f T = transform();
     v3f center = translation(T);
@@ -31,10 +31,10 @@ bool Sphere::collisionTest(SurfacePoint& p, const Ray& ray) const
     D = sqrt(D);
     if (b+D < 0)
         return false;
-    float x = b-D;
-    if (x < 0)
-        x = b+D;
-    auto pos = ray.origin + x*ray.dir;
+    rayParam = b-D;
+    if (rayParam < 0)
+        rayParam = b+D;
+    auto pos = ray.origin + rayParam*ray.dir;
     sppos(p) = pos;
     auto n = pos - center;
     spnormal(p) = n / n.norm2();

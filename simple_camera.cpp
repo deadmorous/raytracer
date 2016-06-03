@@ -38,7 +38,15 @@ public:
         Q_UNUSED(rayTracer);
         Q_UNUSED(surfacePoint)
 
+        //*
         v2f re = conv<v2f>(m_ST * conv<v4f>(ray.origin));   // Screen coordinates of ray origin
+        /*/
+        // No lens
+        v2f re = sptex(surfacePoint);
+        re[0] = 0.5*(re[0]+1) * m_geom.resx;
+        re[1] = 0.5*(re[1]+1) * m_geom.resy;
+        //*/
+
         int x = static_cast<int>(re[0]);
         int y = static_cast<int>(re[1]);
         if (x < 0   ||   x >= m_geom.resx   ||

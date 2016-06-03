@@ -33,7 +33,7 @@ public:
 
         /// \brief Camera screen resolution in the y direction.
         int resy;
-        Geometry() : fovy(45.f), aspect(16.f/9.f), dist(1.f), resx(1600), resy(900) {}
+        Geometry() : fovy(90.f), aspect(16.f/9.f), dist(1.f), resx(1600), resy(900) {}
         Geometry(
                 float fovy,
                 float aspect,
@@ -48,11 +48,11 @@ public:
         {}
 
         float screenWidth() const {
-            return dist * fovy * aspect;
+            return screenHeight() * aspect;
         }
 
         float screenHeight() const {
-            return dist * aspect;
+            return dist * 2.f*tan(0.5f*deg2rad(fovy));
         }
     };
 

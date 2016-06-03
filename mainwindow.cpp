@@ -3,6 +3,15 @@
 #include "serial.h"
 #include <QApplication>
 #include <QFileDialog>
+#include <QMessageBox>
+
+template< class F >
+inline void wrapSignalHandler(QWidget* parent, F f) {
+    try { f(); }
+    catch( const std::exception& e ) {
+        QMessageBox::critical(parent, QString(), QString::fromUtf8(e.what()));
+    }
+}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,27 +32,32 @@ MainWindow::~MainWindow()
 void MainWindow::openScene()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open scene"), QString(), tr("Scenes (*.scn)"));
-    if (fileName.isEmpty())
-        return;
+    if (!fileName.isEmpty())
+        openScene(fileName);
+}
 
-    using namespace raytracer;
-    FileReader::Ptr f = FileReader::newInstance("JsonFileReader");
-    m_rayTracer = RayTracer();
-    m_rayTracer.read(f->read(fileName));
-    qApp->setOverrideCursor(QCursor(Qt::WaitCursor));
-    m_rayTracer.run();
-    qApp->restoreOverrideCursor();
-    Camera::Ptr cam = m_rayTracer.camera();
-    if (cam) {
-        ui->label->setText(QString());
-        ui->label->setPixmap(QPixmap::fromImage(m_rayTracer.camera()->image()));
-        ui->actionSaveRaytracerImage->setEnabled(true);
-    }
-    else {
-        ui->label->setPixmap(QPixmap());
-        ui->label->setText(tr("There is no camera, nothing to show here"));
-        ui->actionSaveRaytracerImage->setEnabled(false);
-    }
+void MainWindow::openScene(const QString& fileName)
+{
+    wrapSignalHandler(this, [this, fileName]() {
+        using namespace raytracer;
+        FileReader::Ptr f = FileReader::newInstance("JsonFileReader");
+        m_rayTracer = RayTracer();
+        m_rayTracer.read(f->read(fileName));
+        qApp->setOverrideCursor(QCursor(Qt::WaitCursor));
+        m_rayTracer.run();
+        qApp->restoreOverrideCursor();
+        Camera::Ptr cam = m_rayTracer.camera();
+        if (cam) {
+            ui->label->setText(QString());
+            ui->label->setPixmap(QPixmap::fromImage(m_rayTracer.camera()->image()));
+            ui->actionSaveRaytracerImage->setEnabled(true);
+        }
+        else {
+            ui->label->setPixmap(QPixmap());
+            ui->label->setText(tr("There is no camera, nothing to show here"));
+            ui->actionSaveRaytracerImage->setEnabled(false);
+        }
+    });
 }
 
 void MainWindow::saveRayTracerImage()
