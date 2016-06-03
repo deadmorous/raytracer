@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     lights/point_light.cpp \
     light_source.cpp \
     surfprop/black_surface.cpp \
-    s_p_reflection.cpp
+    s_p_reflection.cpp \
+    s_p_matt.cpp
 
 HEADERS  += mainwindow.h \
     compile_assert.h \
@@ -64,6 +65,7 @@ HEADERS  += mainwindow.h \
     simple_camera.h \
     lights/point_light.h \
     surfprop/black_surface.h \
-    s_p_reflection.h
+    s_p_reflection.h \
+    s_p_matt.h
 
 FORMS    += mainwindow.ui
