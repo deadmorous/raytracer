@@ -1,5 +1,5 @@
-#ifndef S_P_MATT_H
-#define S_P_MATT_H
+#ifndef MATT_SURFACE_H
+#define MATT_SURFACE_H
 
 #include "surface_point.h"
 #include "surface_properties.h"
@@ -12,9 +12,9 @@ namespace raytracer {
 struct Ray;
 class RayTracer;
 
-class s_p_matt : public SurfaceProperties
+class MattSurface : public SurfaceProperties
 {
-    s_p_matt();
+    MattSurface();
 
     void processCollision(
             const Ray& ray,
@@ -30,5 +30,5 @@ private:
 
 
 } // end namespace raytracer
-#endif // S_P_MATT_H
+#endif // MATT_SURFACE_H
 

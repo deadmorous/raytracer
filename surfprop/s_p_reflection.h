@@ -1,5 +1,5 @@
-#ifndef S_P_REFLECTION
-#define S_P_REFLECTION
+#ifndef REFLECTION_SURFACE_H
+#define REFLECTION_SURFACE_H
 
 
 #include "surface_point.h"
@@ -11,14 +11,17 @@ namespace raytracer {
 struct Ray;
 class RayTracer;
 
-class s_p_reflection : public SurfaceProperties
+class ReflectionSurface : public SurfaceProperties
 {
-    s_p_reflection();
+    DECL_GENERATOR(ReflectionSurface)
+public:
+    ReflectionSurface();
 
     void processCollision(
             const Ray& ray,
             const SurfacePoint& surfacePoint,
             RayTracer& rayTracer) const;
+    void read(const QVariant &v);
 
     v3f reflectivity()const;
     void setReflectivity(const v3f&reflectivity);
@@ -29,5 +32,5 @@ private:
 
 
 } // end namespace raytracer
-#endif // S_P_REFLECTION
+#endif // REFLECTION_SURFACE_H
 
