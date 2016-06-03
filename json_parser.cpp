@@ -180,31 +180,34 @@ QString JsonParser::parseName(int& pos) const
 
 void JsonParser::skipWhitespace(int& pos) const
 {
-    bool commentSkipped;
+    bool anythingSkipped;
     do {
-        commentSkipped = false;
+        anythingSkipped = false;
 
         // Try to parse C comment
         QRegExp rxCComment("^/\\*.*\\*/");
         if (rxCComment.indexIn(m_json, pos, QRegExp::CaretAtOffset) == pos) {
             pos += rxCComment.matchedLength();
-            commentSkipped = true;
+            anythingSkipped = true;
         }
 
         // Try to parse C++ comment
         QRegExp rxCppComment("^//[^\n]*(\n|$)");
         if (rxCppComment.indexIn(m_json, pos, QRegExp::CaretAtOffset) == pos) {
             pos += rxCppComment.matchedLength();
-            commentSkipped = true;
+            anythingSkipped = true;
         }
 
         QRegExp rxWhitespace("^\\s*");
         int index = rxWhitespace.indexIn(m_json, pos, QRegExp::CaretAtOffset);
         Q_ASSERT(index == pos);
         Q_UNUSED(index);
-        pos += rxWhitespace.matchedLength();
+        if (rxWhitespace.matchedLength() > 0) {
+            anythingSkipped = true;
+            pos += rxWhitespace.matchedLength();
+        }
     }
-    while(commentSkipped);
+    while(anythingSkipped);
 }
 
 void JsonParser::checkHasInput(int pos) const {

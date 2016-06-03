@@ -3,7 +3,8 @@
         primitives: [
             ['Sphere', {
                 radius: 0.1,
-                transform: ['Translate', [1, 0, 0]]
+                transform: ['Translate', [1, 0, 0]],
+                surf_prop: ['BlackSurface', {}] // TODO: Set other surface properties
             }]
         ],
         lights: [
