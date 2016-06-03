@@ -1,14 +1,12 @@
-#ifndef SURFACE_PROPERTIES_H
-#define SURFACE_PROPERTIES_H
-
 /// \file
 /// \brief Declaration of the SurfaceProperties interface.
+
+#ifndef SURFACE_PROPERTIES_H
+#define SURFACE_PROPERTIES_H
 
 #include "surface_point.h"
 #include "factory.h"
 #include "serial.h"
-
-#include <memory>
 
 namespace raytracer {
 

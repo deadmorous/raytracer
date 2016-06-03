@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     transform.cpp \
     simple_camera.cpp \
     lights/point_light.cpp \
-    light_source.cpp
+    light_source.cpp \
+    surfprop/black_surface.cpp
 
 HEADERS  += mainwindow.h \
     compile_assert.h \
@@ -60,6 +61,7 @@ HEADERS  += mainwindow.h \
     primitives/rectangle.h \
     transform.h \
     simple_camera.h \
-    lights/point_light.h
+    lights/point_light.h \
+    surfprop/black_surface.h
 
 FORMS    += mainwindow.ui

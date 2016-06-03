@@ -35,6 +35,9 @@ public:
     /// \param ray Ray to test collision with.
     /// \return Range of primitives that may collide with the ray.
     PrimitiveSequenceRange find(const Ray& ray) const;
+
+private:
+    std::vector<const Primitive*> m_primitives;
 };
 
 } // end namespace raytracer

@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLabel>
+
+#include "ray_tracer.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,6 +20,13 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+private slots:
+    void openScene();
+    void saveRayTracerImage();
+
+private:
+    raytracer::RayTracer m_rayTracer;
 };
 
 #endif // MAINWINDOW_H

@@ -53,6 +53,16 @@ template< class To, class From >
 inline To conv(const From& src);
 
 template<>
+inline v2f conv(const v3f& src) {
+    return src.block< 2, 1 >(0, 0) * (1.f / src[2]);
+}
+
+template<>
+inline v3f conv(const v2f& src) {
+    return mkv3f(src[0], src[1], 1.0f);
+}
+
+template<>
 inline v3f conv(const v4f& src) {
     return src.block< 3, 1 >(0, 0) * (1.f / src[3]);
 }

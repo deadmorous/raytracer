@@ -1,4 +1,10 @@
+/// \file
+/// \brief Implementation of the PointLight class.
+
 #include "point_light.h"
+#include "ray_tracer.h"
+#include "ray.h"
+#include <random>
 
 namespace raytracer {
 
@@ -11,7 +17,31 @@ PointLight::PointLight() :
 
 void PointLight::emitRays(int count, RayTracer& rayTracer) const
 {
-    // TODO
+    // Initialize random generation facilities
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dis(-1.f, 1.f);
+
+    // Obtain light source origin
+    v3f origin = translation(transform());
+
+    // Emit count rays in random directions
+    for (int i=0; i<count; ++i)
+    {
+        // Generate random direction
+        v3f dir;
+        forever {
+            dir = mkv3f(dis(gen), dis(gen), dis(gen));
+            float dirNorm = dir.norm2();
+            if (dirNorm == 0.f)
+                continue;
+            dir /= dirNorm;
+            break;
+        }
+
+        // Emit ray
+        rayTracer.processRay(Ray(origin, dir, m_color, 0));
+    }
 }
 
 void PointLight::read(const QVariant &v)

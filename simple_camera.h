@@ -67,14 +67,13 @@ public:
 
     Primitive::Ptr cameraPrimitive() const;
 
-    QPixmap pixmap() const;
+    QImage image() const;
 
     void read(const QVariant &v);
 
 private:
     Primitive::Ptr m_primitive;
     Geometry m_geometry;
-    QPixmap m_pixmap;
     std::vector< v3f > m_canvas;
 };
 

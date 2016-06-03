@@ -5,7 +5,7 @@
 /// \brief Declaration of the Scene class.
 
 #include "primitive.h"
-#include <QPixmap>
+#include <QImage>
 
 namespace raytracer {
 
@@ -23,7 +23,7 @@ public:
     virtual Primitive::Ptr cameraPrimitive() const = 0;
 
     /// \brief Returns generated image.
-    virtual QPixmap pixmap() const = 0;
+    virtual QImage image() const = 0;
 
     /// \brief Returns primitive transformation matrix.
     const m4f& transform() const;

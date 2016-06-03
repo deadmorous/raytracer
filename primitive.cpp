@@ -4,6 +4,7 @@
 #include "primitive.h"
 #include "transform.h"
 #include "bounding_sphere.h"
+#include "surfprop/black_surface.h"
 
 namespace raytracer {
 
@@ -48,7 +49,8 @@ void Primitive::read(const QVariant& v)
     m_surfaceProperties.reset();
 
     QVariantMap m = safeVariantMap(v);
-    readOptionalTypedProperty(m_surfaceProperties, m, "surf_prop");
+    if (!readOptionalTypedProperty(m_surfaceProperties, m, "surf_prop"))
+        m_surfaceProperties = std::make_shared<BlackSurface>();
 
     Transform::Ptr t;
     if (readOptionalTypedProperty(t, m, "transform"))
