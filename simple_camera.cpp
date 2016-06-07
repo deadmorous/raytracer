@@ -176,6 +176,8 @@ void SimpleCamera::read(const QVariant &v)
     Translate(-axis*m_geometry.dist)(T);
     m_primitive->setTransform(T);
 
+    m_primitive->setName("camera screen");
+
     m_primitive->setSurfaceProperties(std::make_shared<CameraSurfProp>(m_geometry, m_canvas, transform()));
 }
 

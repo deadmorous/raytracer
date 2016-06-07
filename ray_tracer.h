@@ -8,6 +8,10 @@
 #include "camera.h"
 #include "primitive_search.h"
 #include "serial.h"
+#include "ray.h"
+
+// deBUG, TODO: Comment out
+//#define DEBUG_RAY_BOUNCES
 
 namespace raytracer {
 
@@ -19,7 +23,7 @@ public:
     struct Options
     {
         /// \brief Maximum total number of rays allowed.
-        int totalRayLimit;
+        quint64 totalRayLimit;
 
         /// \brief Ray reflection limit.
         int reflectionLimit;
@@ -38,7 +42,7 @@ public:
         {
         }
 
-        Options& setTotalRayLimit(int x) {
+        Options& setTotalRayLimit(quint64 x) {
             totalRayLimit = x;
             return *this;
         }
@@ -147,6 +151,33 @@ private:
     ScopedBuf< CollisionData > collisionData() {
         return ScopedBuf< CollisionData >(m_collisionDataBuffer, m_collisionDataBufferSize);
     }
+
+    quint64 m_lastRayNumber;
+
+#ifdef DEBUG_RAY_BOUNCES
+    enum { DebugMaxRayBounceChains = 1000 };
+    enum RayBounceChainDeathReason {
+        RayBounceChainNoReason,
+        RayBounceChainGoneAway,
+        RayBounceChainReflectionLimitReached,
+        RayBounceChainColorThresholdReached
+    };
+    struct RayBounceInfo {
+        Ray ray;
+        CollisionData cd;
+        RayBounceChainDeathReason reason;
+        RayBounceInfo() {}
+        RayBounceInfo(const Ray& ray, const CollisionData& cd, RayBounceChainDeathReason reason) : ray(ray), cd(cd), reason(reason) {}
+    };
+    typedef std::vector< RayBounceInfo > RayBounceChain;
+    std::vector< RayBounceChain > m_rayBounceChains;
+    void addRayBounceInfo(const RayBounceInfo& rbi);
+#define ADD_RAY_BOUNCE_INFO(ray, cd) addRayBounceInfo(RayBounceInfo(ray, cd, RayBounceChainNoReason));
+#define FINISH_RAY_BOUNCE_CHAIN(ray, reason) addRayBounceInfo(RayBounceInfo(ray, CollisionData(), reason));
+#else // DEBUG_RAY_BOUNCES
+#define ADD_RAY_BOUNCE_INFO(ray, cd)
+#define FINISH_RAY_BOUNCE_CHAIN(ray, reason)
+#endif // DEBUG_RAY_BOUNCES
 };
 
 } // end namespace raytracer

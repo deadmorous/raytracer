@@ -21,6 +21,16 @@ BoundingSphere Primitive::transformBoundingSphere(const BoundingSphere& bs) cons
                 bs.radius * scalingFactor(affine(m_transform)));
 }
 
+QString Primitive::name() const
+{
+    return m_name;
+}
+
+void Primitive::setName(const QString& name)
+{
+    m_name = name;
+}
+
 const m4f &Primitive::transform() const
 {
     return m_transform;
@@ -45,10 +55,14 @@ void Primitive::read(const QVariant& v)
 {
     using namespace std::placeholders;
 
+    m_name = QString();
     m_transform = fsmx::identity<m4f>();
     m_surfaceProperties.reset();
 
     QVariantMap m = safeVariantMap(v);
+
+    readOptionalProperty(m_name, m, "name");
+
     if (!readOptionalTypedProperty(m_surfaceProperties, m, "surf_prop"))
         m_surfaceProperties = std::make_shared<BlackSurface>();
 

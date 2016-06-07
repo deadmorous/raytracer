@@ -44,6 +44,12 @@ public:
     /// \param bs Bounding sphere for untransformed geometry.
     BoundingSphere transformBoundingSphere(const BoundingSphere &bs) const;
 
+    /// \brief Returns primitive name.
+    QString name() const;
+
+    /// \brief Sets primitive name.
+    void setName(const QString& name);
+
     /// \brief Returns primitive transformation matrix.
     const m4f& transform() const;
 
@@ -60,6 +66,7 @@ public:
     void read(const QVariant& v);
 
 private:
+    QString m_name;
     m4f m_transform;
     SurfaceProperties::Ptr m_surfaceProperties;
 };

@@ -2,15 +2,64 @@
     scene: {
         primitives: [
             ['Sphere', {
+                name: 'sphere',
                 radius: 0.25,
                 transform: ['Translate', [0, 0, -1]],
-                surf_prop: ['MattSurface', {color: [0.1, 0.05, 0.05]}]
+                surf_prop: ['MattSurface', {color: [1, 0, 0]}]
             }],
             ['Rectangle', {
+                name: 'front wall',
                 width: 3,
                 height: 3,
                 transform: ['Translate', [0, 0, -2]],
                 surf_prop: ['MattSurface', {color: [0.5, 1, 0.5]}]
+            }],
+            ['Rectangle', {
+                name: 'left wall',
+                width: 3,
+                height: 3,
+                transform: ['CombinedTransform', [
+                    ['Translate', [-1.5, 0, -2]],
+                    ['Rotate', { axis: [0, 1, 0], angle: 90}]]
+                ],
+                surf_prop: ['MattSurface', {color: [0.5, 0.5, 1]}]
+            }],
+            ['Rectangle', {
+                name: 'right wall',
+                width: 3,
+                height: 3,
+                transform: ['CombinedTransform', [
+                    ['Translate', [1.5, 0, -2]],
+                    ['Rotate', { axis: [0, 1, 0], angle: 90}]]
+                ],
+                surf_prop: ['MattSurface', {color: [1, 1, 0.5]}]
+            }],
+            ['Rectangle', {
+                name: 'top wall',
+                width: 3,
+                height: 3,
+                transform: ['CombinedTransform', [
+                    ['Translate', [0, 1.5, -2]],
+                    ['Rotate', { axis: [1, 0, 0], angle: 90}]]
+                ],
+                surf_prop: ['MattSurface', {color: [0.7, 1, 1]}]
+            }],
+            ['Rectangle', {
+                name: 'bottom wall',
+                width: 3,
+                height: 3,
+                transform: ['CombinedTransform', [
+                    ['Translate', [0, -1.5, -2]],
+                    ['Rotate', { axis: [1, 0, 0], angle: 90}]]
+                ],
+                surf_prop: ['MattSurface', {color: [1, 0.5, 1]}]
+            }],
+            ['Rectangle', {
+                name: 'back wall',
+                width: 3,
+                height: 3,
+                transform: ['Translate', [0, 0, 1]],
+                surf_prop: ['MattSurface', {color: [0.8, 0.8, 0.8]}]
             }]
         ],
         lights: [
@@ -23,7 +72,7 @@
     camera: ['SimpleCamera', {
         transform: [
             'CombinedTransform', [
-                ['Rotate', { axis: [0,0,1], angle: 0 }],
+                ['Rotate', { axis: [0,1,0], angle: 0 }],
                 ['Translate', [0,0,1]]
             ]
         ],
@@ -38,7 +87,7 @@
         }
     }],
     options: {
-        max_rays: 100000000,
+        max_rays: 10000000,
         max_reflections: 10,
         intensity_threshold: 0.1
     }

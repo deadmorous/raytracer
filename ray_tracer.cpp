@@ -3,12 +3,16 @@
 
 #include "ray_tracer.h"
 #include "surface_properties.h"
-#include "ray.h"
+
+#ifdef DEBUG_RAY_BOUNCES
+#include <QDebug>
+#endif // DEBUG_RAY_BOUNCES
 
 namespace raytracer {
 
 RayTracer::RayTracer() :
-    m_collisionDataBufferSize(0)
+    m_collisionDataBufferSize(0),
+    m_lastRayNumber(0)
 {
 }
 
@@ -45,10 +49,19 @@ RayTracer::Options RayTracer::options() const {
 
 void RayTracer::processRay(const Ray& ray)
 {
-    if (ray.generation > m_options.reflectionLimit)
+    if (m_lastRayNumber >= m_options.totalRayLimit)
         return;
-    if (ray.color[0] + ray.color[1] + ray.color[2] < m_options.intensityThreshold)
+    if (ray.generation > m_options.reflectionLimit) {
+        // No collisions occurred
+        FINISH_RAY_BOUNCE_CHAIN(ray, RayBounceChainReflectionLimitReached);
         return;
+    }
+    if (ray.color[0] + ray.color[1] + ray.color[2] < m_options.intensityThreshold) {
+        FINISH_RAY_BOUNCE_CHAIN(ray, RayBounceChainColorThresholdReached);
+        return;
+    }
+
+    ++m_lastRayNumber;
 
     // Find candidates for collisions
     auto r = m_psearch.find(ray);
@@ -73,14 +86,87 @@ void RayTracer::processRay(const Ray& ray)
             cdbuf.pop();
     }
 
-    if (cdbuf.empty())
+    if (cdbuf.empty()) {
         // No collisions occurred
+        FINISH_RAY_BOUNCE_CHAIN(ray, RayBounceChainGoneAway);
         return;
+    }
 
     // Process nearest collision
     const CollisionData& cd0 = *std::min(cdbuf.begin(), cdbuf.end());
+    ADD_RAY_BOUNCE_INFO(ray, cd0)
     cd0.primitive->surfaceProperties()->processCollision(ray, cd0.surfacePoint, *this);
 }
+
+#ifdef DEBUG_RAY_BOUNCES
+void RayTracer::addRayBounceInfo(const RayBounceInfo& rbi)
+{
+    auto formatv3f = [](const v3f& v) -> QString {
+        return QString("[%1, %2, %3]").arg(v[0]).arg(v[1]).arg(v[2]);
+    };
+    auto formatHexByte = [](float v) -> QString {
+        int x = static_cast<int>(v * 255.999);
+        if (x < 0   ||   x > 255)
+            return "??";
+        QString result;
+        if (x < 0x10)
+            result += "0";
+        result += QString::number(x, 16);
+        return result;
+    };
+    auto formatColor = [formatHexByte](const v3f& v) -> QString {
+        return QString("#%1%2%3")
+                .arg(formatHexByte(v[0]))
+                .arg(formatHexByte(v[1]))
+                .arg(formatHexByte(v[2]));
+    };
+    auto formatRayBounceChainDeathReason = [](const RayBounceChainDeathReason& reason) -> QString {
+        switch (reason) {
+        case RayBounceChainNoReason: return "no reason";
+        case RayBounceChainGoneAway: return "gone away";
+        case RayBounceChainReflectionLimitReached: return "reflection limit reached";
+        case RayBounceChainColorThresholdReached: return "color threshold reached";
+        }
+        return "no reason";
+    };
+
+    if (m_rayBounceChains.size() > DebugMaxRayBounceChains)
+        return;
+    if (rbi.ray.generation == 0) {
+        if (m_rayBounceChains.size() == DebugMaxRayBounceChains) {
+            foreach (const RayBounceChain& chain, m_rayBounceChains) {
+                QStringList items;
+                Q_ASSERT(!chain.empty());
+                RayBounceChain::const_iterator itLast = chain.end() - 1;
+                for (RayBounceChain::const_iterator it=chain.begin(); it!=itLast; ++it) {
+                    const RayBounceInfo& item = *it;
+                    items << QString("%1: @%2 >%3 %4 => %5 @%6 >%7").arg(
+                                 QString::number(item.ray.generation),
+                                 formatv3f(item.ray.origin),
+                                 formatv3f(item.ray.dir),
+                                 formatColor(item.ray.color),
+                                 item.cd.primitive->name(),
+                                 formatv3f(sppos(item.cd.surfacePoint)),
+                                 formatv3f(spnormal(item.cd.surfacePoint)));
+                }
+                {
+                    const RayBounceInfo& item = *itLast;
+                    items << QString("%1: @%2 >%3 %4 =| (%5)").arg(
+                                 QString::number(item.ray.generation),
+                                 formatv3f(item.ray.origin),
+                                 formatv3f(item.ray.dir),
+                                 formatColor(item.ray.color),
+                                 formatRayBounceChainDeathReason(item.reason));
+                }
+                qDebug().noquote() << items.join("\n    ");
+            }
+        }
+        m_rayBounceChains.push_back(RayBounceChain());
+    }
+    Q_ASSERT(!m_rayBounceChains.empty());
+    m_rayBounceChains.rbegin()->push_back(rbi);
+}
+#endif // DEBUG_RAY_BOUNCES
 
 void RayTracer::read(const QVariant& v)
 {
@@ -100,13 +186,15 @@ void RayTracer::read(const QVariant& v)
 
 void RayTracer::run()
 {
+    // Reset ray counter
+    m_lastRayNumber = 0;
+
     // Prepare the search structure
     m_psearch = PrimitiveSearch();
     for (Primitive::Ptr p : m_scene.primitives())
         m_psearch.add(p.get());
     if (m_camera)
         m_psearch.add(m_camera->cameraPrimitive().get());
-
 
     auto lights = m_scene.lightSources();
 

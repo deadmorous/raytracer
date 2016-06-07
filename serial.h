@@ -19,8 +19,14 @@ template< class T > inline T fromVariant(const QVariant& v);
 
 template<> inline float fromVariant(const QVariant& v)
 {
-    Q_ASSERT(v.canConvert<double>());
-    return static_cast<float>(v.toDouble());
+    Q_ASSERT(v.canConvert<float>());
+    return v.value<float>();
+}
+
+template<> inline quint64 fromVariant(const QVariant& v)
+{
+    Q_ASSERT(v.canConvert<quint64>());
+    return v.value<quint64>();
 }
 
 template< int n >
