@@ -17,17 +17,9 @@ public:
     CameraSurfProp(const SimpleCamera::Geometry& geom, std::vector< v3f >& canvas, const m4f& transform) :
         m_geom(geom),
         m_canvas(canvas),
-        m_transform(transform)
+        m_transform(transform),
+        m_ST(projectionMatrix() * transform.inv())
     {
-        // Compute transformation from eye coordinates to screen coordinates
-        v3x4f S = fsmx::zero<v3x4f>();
-        float *Sd = S.data().data();
-        Sd[0] = geom.dist * geom.resx / geom.screenWidth();
-        Sd[2] = 0.5f * geom.resx;
-        Sd[5] = geom.dist * geom.resy / geom.screenHeight();
-        Sd[6] = 0.5f * geom.resy;
-        Sd[10] = 1.f;
-        m_ST = S * transform;
     }
 
     void processCollision(
@@ -38,9 +30,9 @@ public:
         Q_UNUSED(rayTracer);
         Q_UNUSED(surfacePoint)
 
-        if (ray.generation == 0)
-            // Ignore direct rays from light source
-            return;
+//        if (ray.generation == 0)
+//            // Ignore direct rays from light source
+//            return;
 
         //*
         v2f re = conv<v2f>(m_ST * conv<v4f>(ray.origin));   // Screen coordinates of ray origin
@@ -73,8 +65,20 @@ private:
     std::vector< v3f >& m_canvas;
     const m4f& m_transform;
 
-    typedef fsmx::MX< fsmx::Data< 3, 4, float > > v3x4f;
-    v3x4f m_ST; // Transformation from world coordinates to screen coordinates
+    typedef fsmx::MX< fsmx::Data< 3, 4, float > > m3x4f;
+    m3x4f m_ST; // Transformation from world coordinates to screen coordinates
+    m3x4f projectionMatrix() const
+    {
+        // Compute transformation from eye coordinates to screen coordinates
+        m3x4f S = fsmx::zero<m3x4f>();
+        float *Sd = S.data().data();
+        Sd[0] = -m_geom.dist * m_geom.resx / m_geom.screenWidth();
+        Sd[2] = 0.5f * m_geom.resx;
+        Sd[5] = -m_geom.dist * m_geom.resy / m_geom.screenHeight();
+        Sd[6] = 0.5f * m_geom.resy;
+        Sd[10] = 1.f;
+        return S;
+    }
 };
 
 } // anonymous namespace
@@ -97,10 +101,23 @@ QImage SimpleCamera::image() const
     if (m_canvas.empty())
         return image;
 
+    // Postprocess image
+    decltype(m_canvas) ppcanvas(m_canvas.size(), fsmx::zero<v3f>());
+    for (int row=1; row+1<m_geometry.resx; ++row)
+        for (int col=1; col+1<m_geometry.resy; ++col)
+        {
+            int index = col + row*m_geometry.resx;
+            v3f& dst = ppcanvas[index];
+            for (int ir=-1; ir<2; ++ir)
+                for (int ic=-1; ic<2; ++ic) {
+                    dst += m_canvas[index + ic + ir*m_geometry.resx];
+                }
+        }
+
     // Determine canvas color range
-    auto minIntensity = m_canvas[0][0];
+    auto minIntensity = ppcanvas[0][0];
     auto maxIntensity = minIntensity;
-    std::for_each(m_canvas.begin(), m_canvas.end(), [&minIntensity, &maxIntensity](const v3f& color) {
+    std::for_each(ppcanvas.begin(), ppcanvas.end(), [&minIntensity, &maxIntensity](const v3f& color) {
         for (int i=0; i< 3; ++i) {
             auto intensity = color[i];
             if (minIntensity > intensity)
@@ -118,7 +135,7 @@ QImage SimpleCamera::image() const
 
     // Copy canvas pixels to the image
     uchar *bits = image.bits();
-    std::for_each(m_canvas.begin(), m_canvas.end(), [&minIntensity, &maxIntensity, &bits](const v3f& color) {
+    std::for_each(ppcanvas.begin(), ppcanvas.end(), [&minIntensity, &maxIntensity, &bits](const v3f& color) {
         bits[3] = 0xff;
         for (int i=0; i<3; ++i) {
             auto normalizedIntensity = (color[i] - minIntensity) / (maxIntensity - minIntensity);

@@ -36,11 +36,14 @@ void MattSurface::processCollision(
         break;
     }
 
-    if (!(ray.dir[0] == 0.f && ray.dir[1] == 0.f)) {
-        v3f p = ray.dir;
+    v3f n = spnormal(surfacePoint);
+    if (dot(n, ray.dir) > 0)
+        n = -n;
+    if (!(n[0] == 0.f && n[1] == 0.f)) {
+        v3f p = n;
         p[2] -= 1;
         p /= p.norm2();
-        dir -= p*dot(p, ray.dir);
+        dir -= p*(2*dot(p, dir));
     }
 
     rayTracer.processRay(Ray(
