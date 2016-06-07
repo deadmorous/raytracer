@@ -73,6 +73,12 @@ void RayTracer::processRay(const Ray& ray)
             cdbuf.pop();
     }
 
+    // deBUG, TODO: Remove
+    for (auto it=r.begin; it!=r.end; ++it) {
+        CollisionData cd;
+        (*it)->collisionTest(cd.rayParam, cd.surfacePoint, ray);
+    }
+
     if (cdbuf.empty())
         // No collisions occurred
         return;

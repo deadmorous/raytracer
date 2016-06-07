@@ -3,15 +3,15 @@
         primitives: [
             ['Sphere', {
                 radius: 0.25,
-                transform: ['Translate', [0, 0, 2]],
-                surf_prop: ['BlackSurface', {
+                transform: ['Translate', [0, 0, -1]],
+                surf_prop: ['MattSurface', {
                     reflectivity: [1, 0.5, 0.5]
                 }]
             }]
         ],
         lights: [
             ['PointLight', {
-                transform: ['Translate', [0, 0, 0]],
+                transform: ['Translate', [0.1, 0, 0]],
                 color: [1, 1, 0.7]
             }]
         ]
@@ -20,7 +20,7 @@
         transform: [
             'CombinedTransform', [
                 ['Rotate', { axis: [0,0,1], angle: 0 }],
-                ['Translate', [0,0,0.15]]
+                ['Translate', [0,0,1]]
             ]
         ],
         geometry: {

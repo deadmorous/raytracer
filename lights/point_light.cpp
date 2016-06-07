@@ -4,7 +4,7 @@
 #include "point_light.h"
 #include "ray_tracer.h"
 #include "ray.h"
-#include <random>
+#include "rnd.h"
 
 namespace raytracer {
 
@@ -18,8 +18,7 @@ PointLight::PointLight() :
 void PointLight::emitRays(int count, RayTracer& rayTracer) const
 {
     // Initialize random generation facilities
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    auto& gen = rnd::gen();
     std::uniform_real_distribution<float> dis(-1.f, 1.f);
 
     // Obtain light source origin

@@ -83,28 +83,38 @@ inline m3f dyad(const v3f& left, const v3f& right) {
 }
 
 /// \brief Returns the upper-left 3x3 block of 4x4 matrix (the affine transformation).
-inline auto affine(m4f& t) -> decltype(t.block<3,3>(0,0)) {
-    return t.block< 3, 3 >(0, 0);
+template< class D >
+inline auto affine(fsmx::MX<D>& t) -> decltype(t.template block<3,3>(0,0)) {
+    COMPILE_ASSERT(D::Nr == 4   &&   D::Nc == 4);
+    return t.template block< 3, 3 >(0, 0);
 }
 
 /// \brief Returns the upper-left 3x3 block of 4x4 matrix (the affine transformation), overload.
-inline auto affine(const m4f& t) -> decltype(t.block<3,3>(0,0)) {
-    return t.block< 3, 3 >(0, 0);
+template< class D >
+inline auto affine(const fsmx::MX<D>& t) -> decltype(t.template block<3,3>(0,0)) {
+    COMPILE_ASSERT(D::Nr == 4   &&   D::Nc == 4);
+    return t.template block< 3, 3 >(0, 0);
 }
 
 /// \brief Returns the upper-right 3x1 block of 4x4 matrix (the translation).
-inline auto translation(m4f& t) -> decltype(t.block<3,1>(0,3)) {
-    return t.block< 3, 1 >(0, 3);
+template< class D >
+inline auto translation(fsmx::MX<D>& t) -> decltype(t.template block<3,1>(0,3)) {
+    COMPILE_ASSERT(D::Nr == 4   &&   D::Nc == 4);
+    return t.template block< 3, 1 >(0, 3);
 }
 
 /// \brief Returns the upper-right 3x1 block of 4x4 matrix (the translation), overload.
-inline auto translation(const m4f& t) -> decltype(t.block<3,1>(0,3)) {
-    return t.block< 3, 1 >(0, 3);
+template< class D >
+inline auto translation(const fsmx::MX<D>& t) -> decltype(t.template block<3,1>(0,3)) {
+    COMPILE_ASSERT(D::Nr == 4   &&   D::Nc == 4);
+    return t.template block< 3, 1 >(0, 3);
 }
 
 /// \brief Returns true if \a t has shear, false otherwise.
-inline bool hasShear(const m3f& t)
+template< class M >
+inline bool hasShear(const M& t)
 {
+    COMPILE_ASSERT(M::Nr == 3   &&   M::Nc == 3);
     const float relTol = 1e-7f;
     m3f tt = t*t.T();
     float x = tt.trace() / 3.f;
@@ -119,30 +129,17 @@ inline bool hasShear(const m3f& t)
     return false;
 }
 
-/// \brief Returns true if the affine part of \a t has shear, false otherwise.
-inline bool hasShear(const m4f& t) {
-    return hasShear(static_cast<m3f>(affine(t)));
-}
-
 /// \brief Returns scaling factor of the affine transformation matrix without shear.
-inline float scalingFactor(const m3f& t) {
+template< class M >
+inline float scalingFactor(const M& t) {
+    COMPILE_ASSERT(M::Nr == 3   &&   M::Nc == 3);
     Q_ASSERT(!hasShear(t));
     return sqrt((t.T()*t).trace() / 3.f);
-}
-
-/// \brief Returns scaling factor of transformation matrix without shear.
-inline float scalingFactor(const m4f& t) {
-    return scalingFactor(static_cast<m3f>(affine(t)));
 }
 
 /// \brief Returns the inverse of transposed \a t.
 inline m3f normalMatrix(const m3f& t) {
     return t.T().inv();
-}
-
-/// \brief Returns the inverse of transposed \a t.
-inline m3f normalMatrix(const m4f& t) {
-    return normalMatrix(static_cast<m3f>(affine(t)));
 }
 
 inline m3f spin(const v3f& x) {

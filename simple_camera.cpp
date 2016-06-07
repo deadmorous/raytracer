@@ -38,6 +38,10 @@ public:
         Q_UNUSED(rayTracer);
         Q_UNUSED(surfacePoint)
 
+        if (ray.generation == 0)
+            // Ignore direct rays from light source
+            return;
+
         //*
         v2f re = conv<v2f>(m_ST * conv<v4f>(ray.origin));   // Screen coordinates of ray origin
         /*/
@@ -54,7 +58,13 @@ public:
             return;
         int index = x + y*m_geom.resx;
         Q_ASSERT(index >= 0   &&   index < static_cast<int>(m_canvas.size()));
+        //*
         m_canvas[index] += ray.color;
+        /*/
+        auto& pixel = m_canvas[index];
+         if (pixel.norm2Square() == 0.f)
+            pixel += ray.color;
+        //*/
     }
     void read(const QVariant&) {}
 

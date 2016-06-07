@@ -20,28 +20,28 @@ Rectangle::Rectangle(float width, float height) :
 
 bool Rectangle::collisionTest(float& rayParam, SurfacePoint& p, const Ray& ray) const
 {
-    m4f T = transform();
-    v3f center = translation(T);
-    m3f A = affine(T);
+    auto& T = transform();
+    auto center = translation(T);
+    auto A = affine(T);
     float sf = scalingFactor(A);
     // v3f n = normalMatrix(T) * mkv3f(0.f, 0.f, 1.f);
     // Since there's no shear, normalMatrix(T) is the same as affine(T) up to scaling.
-    v3f n = A.col(2);
+    auto n = A.constCol(2);
     float en = dot(ray.dir, n);
     if (en == 0.f)
         return false;
-    rayParam = dot((center - ray.origin), n) / en;
+    auto d = ray.origin - center;
+    rayParam = -dot(d, n) / en;
     if (rayParam <= 0.f)
         return false;
-    v3f r = ray.origin + rayParam*ray.dir;
-    v3f dr = r - center;
-    float tex1 = dot(A.col(0), dr) / (0.5f*m_width*sf);
+    auto dr = d + rayParam*ray.dir;
+    float tex1 = dot(A.constCol(0), dr) / (0.5f*m_width*sf);
     if (fabs(tex1) > 1.f)
         return false;
-    float tex2 = dot(A.col(1), dr) / (0.5f*m_height*sf);
+    float tex2 = dot(A.constCol(1), dr) / (0.5f*m_height*sf);
     if (fabs(tex2) > 1.f)
         return false;
-    sppos(p) = r;
+    sppos(p) = center + dr;
     spnormal(p) = n / n.norm2();
     sptex(p) = mkv2f(tex1, tex2);
     return true;

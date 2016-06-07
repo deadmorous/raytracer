@@ -18,14 +18,13 @@ Sphere::Sphere(float radius) :
 
 bool Sphere::collisionTest(float& rayParam, SurfacePoint& p, const Ray& ray) const
 {
-    m4f T = transform();
-    v3f center = translation(T);
-    float radius = m_radius * scalingFactor(T);
+    auto& T = transform();
+    auto center = translation(T);
+    float radius = m_radius * scalingFactor(affine(T));
 
-    auto d = ray.origin - center;
+    auto d = center - ray.origin;
     float b = dot(d, ray.dir);
-    float c = dot(d, d) - radius*radius;
-    float D = b*b - c;
+    float D = b*b + radius*radius - dot(d, d);
     if (D < 0)
         return false;
     D = sqrt(D);

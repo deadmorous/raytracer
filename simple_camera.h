@@ -52,7 +52,7 @@ public:
         }
 
         float screenHeight() const {
-            return dist * 2.f*tan(0.5f*deg2rad(fovy));
+            return dist * 2.f*sin(0.5f*deg2rad(fovy));
         }
     };
 

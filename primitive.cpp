@@ -15,10 +15,10 @@ Primitive::Primitive() :
 
 BoundingSphere Primitive::transformBoundingSphere(const BoundingSphere& bs) const
 {
-    Q_ASSERT(!hasShear(m_transform));
+    Q_ASSERT(!hasShear(affine(m_transform)));
     return BoundingSphere(
                 bs.center + translation(m_transform),
-                bs.radius * scalingFactor(m_transform));
+                bs.radius * scalingFactor(affine(m_transform)));
 }
 
 const m4f &Primitive::transform() const
