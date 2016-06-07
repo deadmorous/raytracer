@@ -14,6 +14,7 @@ class RayTracer;
 
 class MattSurface : public SurfaceProperties
 {
+    DECL_GENERATOR(MattSurface)
     MattSurface();
 
     void processCollision(
@@ -24,8 +25,10 @@ class MattSurface : public SurfaceProperties
     v3f mattsurf()const;
     void setMattsurf(const v3f&mattsurf);
 
+    void read(const QVariant &v);
+
 private:
-    v3f m_mattsurf;
+    v3f m_color;
 };
 
 

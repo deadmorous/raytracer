@@ -1,11 +1,14 @@
 #include "surfprop/s_p_matt.h"
 #include "ray_tracer.h"
 #include "ray.h"
+#include "rnd.h"
 
 namespace raytracer {
 
+REGISTER_GENERATOR(MattSurface)
+
 MattSurface::MattSurface():
-    m_mattsurf(mkv3f(0.9f, 0.9f, 0.9f))
+    m_color(mkv3f(1.f, 1.f, 1.f))
 {
 }
 
@@ -15,20 +18,34 @@ void MattSurface::processCollision(
         RayTracer& rayTracer) const
 
 {
-    auto n = spnormal(surfacePoint);
-//    v3f color = fsmx::memberwise(ray.color, m_reflectivity,
-//                                 [](float a, float b)->float {return a*b;});
-    auto n1=n;
-
     // TODO: Refactor
-    v3f color = mkv3f(
-            ray.color[0]*m_mattsurf[0],
-            ray.color[1]*m_mattsurf[1],
-            ray.color[2]*m_mattsurf[2]);
+    auto color = mkv3f(
+            ray.color[0]*m_color[0],
+            ray.color[1]*m_color[1],
+            ray.color[2]*m_color[2]);
+
+    auto& gen = rnd::gen();
+    std::uniform_real_distribution<float> d1(-1.f, 1.f), d2(0.f, 1.f);
+    v3f dir;
+    forever {
+        dir = mkv3f(d1(gen), d1(gen), d2(gen));
+        float dirNorm = dir.norm2();
+        if (dirNorm == 0.f)
+            continue;
+        dir /= dirNorm;
+        break;
+    }
+
+    if (!(ray.dir[0] == 0.f && ray.dir[1] == 0.f)) {
+        v3f p = ray.dir;
+        p[2] -= 1;
+        p /= p.norm2();
+        dir -= p*dot(p, ray.dir);
+    }
 
     rayTracer.processRay(Ray(
         sppos(surfacePoint),
-        ray.dir - n1*(2.f*(n1.T()*ray.dir)),
+        dir,
         color,
         ray.generation+1));
 //    origin=v.block< 3, 1 >
@@ -39,14 +56,10 @@ void MattSurface::processCollision(
 }
 
 
-v3f MattSurface::mattsurf() const
+void MattSurface::read(const QVariant &v)
 {
-    return m_mattsurf;
-}
-
-void MattSurface::setMattsurf(const v3f&mattsurf)
-{
-     m_mattsurf=mattsurf;
+    m_color = mkv3f(1.f, 1.f, 1.f);
+    readOptionalProperty(m_color, v, "color");
 }
 
 } // end namespace raytracer
