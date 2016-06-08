@@ -54,8 +54,8 @@ public:
         m_canvas[index] += ray.color;
         /*/
         auto& pixel = m_canvas[index];
-         if (pixel.norm2Square() == 0.f)
-            pixel += ray.color;
+        for (int i=0; i<3; ++i)
+            pixel[i] = std::max(pixel[i], ray.color[i]);
         //*/
     }
     void read(const QVariant&) {}

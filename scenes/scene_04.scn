@@ -22,7 +22,7 @@
                     ['Translate', [-1.5, 0, -0.5]],
                     ['Rotate', { axis: [0, 1, 0], angle: 90}]]
                 ],
-                surf_prop: ['SimpleDiffuseSurface', {color: [0.1, 0.1, 0.2]}]
+                surf_prop: ['ReflectionSurface', {reflectivity: [0.5, 0.5, 0.5]}]
             }],
             ['Rectangle', {
                 name: 'right wall',
@@ -72,8 +72,9 @@
     camera: ['SimpleCamera', {
         transform: [
             'CombinedTransform', [
-                ['Rotate', { axis: [0,1,0], angle: 0 }],
-                ['Translate', [0,0,1]]
+                ['Translate', [0.5,0,1]],
+                ['Rotate', { axis: [0,1,0], angle: 40 }]
+
             ]
         ],
         geometry: {
@@ -87,8 +88,8 @@
         }
     }],
     options: {
-        max_rays: 10000000,
-        max_reflections: 5,
+        max_rays: 1000000000,
+        max_reflections: 7,
         intensity_threshold: 0.02
     }
 }
