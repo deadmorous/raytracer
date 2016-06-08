@@ -20,7 +20,7 @@ class LightSource :
 public:
     LightSource();
 
-    virtual void emitRays(int count, RayTracer& rayTracer) const = 0;
+    virtual void emitRays(quint64 count, RayTracer& rayTracer) const = 0;
 
     /// \brief Returns primitive transformation matrix.
     const m4f& transform() const;

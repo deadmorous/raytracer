@@ -93,7 +93,7 @@ void RayTracer::processRay(const Ray& ray)
     }
 
     // Process nearest collision
-    const CollisionData& cd0 = *std::min(cdbuf.begin(), cdbuf.end());
+    const CollisionData& cd0 = *std::min_element(cdbuf.begin(), cdbuf.end());
     ADD_RAY_BOUNCE_INFO(ray, cd0)
     cd0.primitive->surfaceProperties()->processCollision(ray, cd0.surfacePoint, *this);
 }
@@ -137,26 +137,23 @@ void RayTracer::addRayBounceInfo(const RayBounceInfo& rbi)
             foreach (const RayBounceChain& chain, m_rayBounceChains) {
                 QStringList items;
                 Q_ASSERT(!chain.empty());
-                RayBounceChain::const_iterator itLast = chain.end() - 1;
-                for (RayBounceChain::const_iterator it=chain.begin(); it!=itLast; ++it) {
-                    const RayBounceInfo& item = *it;
-                    items << QString("%1: @%2 >%3 %4 => %5 @%6 >%7").arg(
-                                 QString::number(item.ray.generation),
-                                 formatv3f(item.ray.origin),
-                                 formatv3f(item.ray.dir),
-                                 formatColor(item.ray.color),
-                                 item.cd.primitive->name(),
-                                 formatv3f(sppos(item.cd.surfacePoint)),
-                                 formatv3f(spnormal(item.cd.surfacePoint)));
-                }
-                {
-                    const RayBounceInfo& item = *itLast;
-                    items << QString("%1: @%2 >%3 %4 =| (%5)").arg(
-                                 QString::number(item.ray.generation),
-                                 formatv3f(item.ray.origin),
-                                 formatv3f(item.ray.dir),
-                                 formatColor(item.ray.color),
-                                 formatRayBounceChainDeathReason(item.reason));
+                foreach (const RayBounceInfo& item, chain) {
+                    if (item.cd.primitive)
+                        items << QString("%1: @%2 >%3 %4 => %5 @%6 >%7").arg(
+                                     QString::number(item.ray.generation),
+                                     formatv3f(item.ray.origin),
+                                     formatv3f(item.ray.dir),
+                                     formatColor(item.ray.color),
+                                     item.cd.primitive->name(),
+                                     formatv3f(sppos(item.cd.surfacePoint)),
+                                     formatv3f(spnormal(item.cd.surfacePoint)));
+                    else
+                        items << QString("%1: @%2 >%3 %4 =| (%5)").arg(
+                                     QString::number(item.ray.generation),
+                                     formatv3f(item.ray.origin),
+                                     formatv3f(item.ray.dir),
+                                     formatColor(item.ray.color),
+                                     formatRayBounceChainDeathReason(item.reason));
                 }
                 qDebug().noquote() << items.join("\n    ");
             }
@@ -203,8 +200,8 @@ void RayTracer::run()
         return;
 
     // Compute rays per light
-    int typicalRayGenerationCount = std::max(1, m_options.reflectionLimit / 3); // TODO better
-    int raysPerLight = m_options.totalRayLimit / (lights.size() * typicalRayGenerationCount);
+    quint64 typicalRayGenerationCount = std::max(1, m_options.reflectionLimit / 3); // TODO better
+    quint64 raysPerLight = m_options.totalRayLimit / (lights.size() * typicalRayGenerationCount);
     if (raysPerLight < 1)
         // Zero rays per light, nothing to do
         return;

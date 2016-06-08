@@ -19,7 +19,7 @@
                 width: 3,
                 height: 3,
                 transform: ['CombinedTransform', [
-                    ['Translate', [-1.5, 0, -2]],
+                    ['Translate', [-1.5, 0, -0.5]],
                     ['Rotate', { axis: [0, 1, 0], angle: 90}]]
                 ],
                 surf_prop: ['MattSurface', {color: [0.5, 0.5, 1]}]
@@ -29,7 +29,7 @@
                 width: 3,
                 height: 3,
                 transform: ['CombinedTransform', [
-                    ['Translate', [1.5, 0, -2]],
+                    ['Translate', [1.5, 0, -0.5]],
                     ['Rotate', { axis: [0, 1, 0], angle: 90}]]
                 ],
                 surf_prop: ['MattSurface', {color: [1, 1, 0.5]}]
@@ -39,7 +39,7 @@
                 width: 3,
                 height: 3,
                 transform: ['CombinedTransform', [
-                    ['Translate', [0, 1.5, -2]],
+                    ['Translate', [0, 1.5, -0.5]],
                     ['Rotate', { axis: [1, 0, 0], angle: 90}]]
                 ],
                 surf_prop: ['MattSurface', {color: [0.7, 1, 1]}]
@@ -49,7 +49,7 @@
                 width: 3,
                 height: 3,
                 transform: ['CombinedTransform', [
-                    ['Translate', [0, -1.5, -2]],
+                    ['Translate', [0, -1.5, -0.5]],
                     ['Rotate', { axis: [1, 0, 0], angle: 90}]]
                 ],
                 surf_prop: ['MattSurface', {color: [1, 0.5, 1]}]
@@ -88,7 +88,7 @@
     }],
     options: {
         max_rays: 10000000,
-        max_reflections: 10,
-        intensity_threshold: 0.1
+        max_reflections: 5,
+        intensity_threshold: 0.2
     }
 }

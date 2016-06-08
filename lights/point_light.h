@@ -15,7 +15,7 @@ public:
     PointLight();
     PointLight(const v3f& color);
 
-    void emitRays(int count, RayTracer& rayTracer) const;
+    void emitRays(quint64 count, RayTracer& rayTracer) const;
     void read(const QVariant &v);
 
 private:

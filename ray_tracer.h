@@ -11,7 +11,7 @@
 #include "ray.h"
 
 // deBUG, TODO: Comment out
-//#define DEBUG_RAY_BOUNCES
+// #define DEBUG_RAY_BOUNCES
 
 namespace raytracer {
 
@@ -167,13 +167,18 @@ private:
         CollisionData cd;
         RayBounceChainDeathReason reason;
         RayBounceInfo() {}
-        RayBounceInfo(const Ray& ray, const CollisionData& cd, RayBounceChainDeathReason reason) : ray(ray), cd(cd), reason(reason) {}
+        RayBounceInfo(const Ray& ray, const CollisionData& cd) : ray(ray), cd(cd), reason(RayBounceChainNoReason) {}
+        RayBounceInfo(const Ray& ray, RayBounceChainDeathReason reason) : ray(ray), reason(reason) {
+            cd.primitive = 0;
+            cd.rayParam = -1;
+            cd.surfacePoint.fill(0.f);
+        }
     };
     typedef std::vector< RayBounceInfo > RayBounceChain;
     std::vector< RayBounceChain > m_rayBounceChains;
     void addRayBounceInfo(const RayBounceInfo& rbi);
-#define ADD_RAY_BOUNCE_INFO(ray, cd) addRayBounceInfo(RayBounceInfo(ray, cd, RayBounceChainNoReason));
-#define FINISH_RAY_BOUNCE_CHAIN(ray, reason) addRayBounceInfo(RayBounceInfo(ray, CollisionData(), reason));
+#define ADD_RAY_BOUNCE_INFO(ray, cd) addRayBounceInfo(RayBounceInfo(ray, cd));
+#define FINISH_RAY_BOUNCE_CHAIN(ray, reason) addRayBounceInfo(RayBounceInfo(ray, reason));
 #else // DEBUG_RAY_BOUNCES
 #define ADD_RAY_BOUNCE_INFO(ray, cd)
 #define FINISH_RAY_BOUNCE_CHAIN(ray, reason)

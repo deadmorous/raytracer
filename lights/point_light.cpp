@@ -15,7 +15,7 @@ PointLight::PointLight() :
 {
 }
 
-void PointLight::emitRays(int count, RayTracer& rayTracer) const
+void PointLight::emitRays(quint64 count, RayTracer& rayTracer) const
 {
     // Initialize random generation facilities
     auto& gen = rnd::gen();
@@ -25,7 +25,7 @@ void PointLight::emitRays(int count, RayTracer& rayTracer) const
     v3f origin = translation(transform());
 
     // Emit count rays in random directions
-    for (int i=0; i<count; ++i)
+    for (quint64 i=0; i<count; ++i)
     {
         // Generate random direction
         v3f dir;

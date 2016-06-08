@@ -39,7 +39,7 @@ void MattSurface::processCollision(
     v3f n = spnormal(surfacePoint);
     if (dot(n, ray.dir) > 0)
         n = -n;
-    if (!(n[0] == 0.f && n[1] == 0.f)) {
+    if (!(n[0] == 0.f && n[1] == 0.f && n[2] > 0)) {
         v3f p = n;
         p[2] -= 1;
         p /= p.norm2();
