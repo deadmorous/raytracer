@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     surfprop/black_surface.cpp \
     surfprop/s_p_reflection.cpp \
     rnd.cpp \
-    surfprop/simple_diffuse_surface.cpp
+    surfprop/simple_diffuse_surface.cpp \
+        surfprop/s_p_matt.cpp
 
 HEADERS  += mainwindow.h \
     compile_assert.h \
@@ -68,6 +69,7 @@ HEADERS  += mainwindow.h \
     surfprop/black_surface.h \
     surfprop/s_p_reflection.h \
     rnd.h \
-    surfprop/simple_diffuse_surface.h
+    surfprop/simple_diffuse_surface.h \
+    surfprop/s_p_matt.h
 
 FORMS    += mainwindow.ui
