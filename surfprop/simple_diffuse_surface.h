@@ -12,10 +12,10 @@ namespace raytracer {
 struct Ray;
 class RayTracer;
 
-class MattSurface : public SurfaceProperties
+class SimpleDiffuseSurface : public SurfaceProperties
 {
-    DECL_GENERATOR(MattSurface)
-    MattSurface();
+    DECL_GENERATOR(SimpleDiffuseSurface)
+    SimpleDiffuseSurface();
 
     void processCollision(
             const Ray& ray,

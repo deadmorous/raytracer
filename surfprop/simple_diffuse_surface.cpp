@@ -1,18 +1,18 @@
-#include "surfprop/s_p_matt.h"
+#include "surfprop/simple_diffuse_surface.h"
 #include "ray_tracer.h"
 #include "ray.h"
 #include "rnd.h"
 
 namespace raytracer {
 
-REGISTER_GENERATOR(MattSurface)
+REGISTER_GENERATOR(SimpleDiffuseSurface)
 
-MattSurface::MattSurface():
+SimpleDiffuseSurface::SimpleDiffuseSurface():
     m_color(mkv3f(1.f, 1.f, 1.f))
 {
 }
 
-void MattSurface::processCollision(
+void SimpleDiffuseSurface::processCollision(
         const Ray& ray,
         const SurfacePoint& surfacePoint,
         RayTracer& rayTracer) const
@@ -59,7 +59,7 @@ void MattSurface::processCollision(
 }
 
 
-void MattSurface::read(const QVariant &v)
+void SimpleDiffuseSurface::read(const QVariant &v)
 {
     m_color = mkv3f(1.f, 1.f, 1.f);
     readOptionalProperty(m_color, v, "color");
