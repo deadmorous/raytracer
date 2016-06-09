@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QCloseEvent>
 
 template< class F >
 inline void wrapSignalHandler(QWidget* parent, F f) {
@@ -15,13 +16,18 @@ inline void wrapSignalHandler(QWidget* parent, F f) {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    m_rayTracerController(m_rayTracer)
 {
     ui->setupUi(this);
     connect(ui->actionQuit, SIGNAL(triggered(bool)), SLOT(close()));
     connect(ui->actionOpenScene, SIGNAL(triggered(bool)), SLOT(openScene()));
     connect(ui->actionSaveRaytracerImage, SIGNAL(triggered(bool)), SLOT(saveRayTracerImage()));
     ui->actionSaveRaytracerImage->setEnabled(false);
+
+    connect(&m_rayTracerController, SIGNAL(rayTracerImageUpdated(QPixmap)), ui->label, SLOT(setPixmap(QPixmap)), Qt::QueuedConnection);
+    connect(&m_rayTracerController, SIGNAL(rayTracerProgress(float,quint64)), SLOT(rayTracerProgress(float,quint64)), Qt::QueuedConnection);
+    connect(&m_rayTracerController, SIGNAL(rayTracerFinished()), SLOT(rayTracerFinished()));
 }
 
 MainWindow::~MainWindow()
@@ -41,15 +47,14 @@ void MainWindow::openScene(const QString& fileName)
     wrapSignalHandler(this, [this, fileName]() {
         using namespace raytracer;
         FileReader::Ptr f = FileReader::newInstance("JsonFileReader");
+        m_rayTracerController.stop();
         m_rayTracer = RayTracer();
         m_rayTracer.read(f->read(fileName));
-        qApp->setOverrideCursor(QCursor(Qt::WaitCursor));
-        m_rayTracer.run();
-        qApp->restoreOverrideCursor();
         Camera::Ptr cam = m_rayTracer.camera();
         if (cam) {
             ui->label->setText(QString());
-            ui->label->setPixmap(QPixmap::fromImage(m_rayTracer.camera()->image()));
+            ui->label->setPixmap(QPixmap::fromImage(cam->image()));
+            m_rayTracerController.start();
             ui->actionSaveRaytracerImage->setEnabled(true);
         }
         else {
@@ -68,4 +73,24 @@ void MainWindow::saveRayTracerImage()
     if (fileName.indexOf(QRegExp("\\.png$|\\.jpe?g$")) == -1)
         fileName += ".png";
     m_rayTracer.camera()->image().save(fileName);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    m_rayTracerController.stop();
+    event->accept();
+}
+
+void MainWindow::rayTracerProgress(float progress, quint64 raysProcessed)
+{
+    ui->statusBar->showMessage(
+                tr("Tracing scene: %1 of %2 rays, %3% done")
+                .arg(QString::number(static_cast<double>(raysProcessed), 'e', 3))
+                .arg(QString::number(static_cast<double>(m_rayTracer.options().totalRayLimit), 'e', 3))
+                .arg(progress*100));
+}
+
+void MainWindow::rayTracerFinished()
+{
+    ui->statusBar->showMessage(tr("Raytracer finished"));
 }

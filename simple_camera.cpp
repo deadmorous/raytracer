@@ -2,7 +2,7 @@
 /// \brief Implementation of the SimpleCamera class.
 
 #include "simple_camera.h"
-#include "primitives/rectangle.h"
+#include "primitives/single_sided_rectangle.h"
 #include "transform.h"
 #include "ray_tracer.h"
 #include "ray.h"
@@ -95,6 +95,28 @@ Primitive::Ptr SimpleCamera::cameraPrimitive() const
     return m_primitive;
 }
 
+void SimpleCamera::clear()
+{
+    m_canvas.resize(m_geometry.resx * m_geometry.resy);
+    std::fill(m_canvas.begin(), m_canvas.end(), fsmx::zero<v3f>());
+
+    m_primitive = std::make_shared<SingleSidedRectangle>(
+                m_geometry.screenWidth(),
+                m_geometry.screenHeight()
+                );
+
+    m4f T = transform();
+    Rotate(mkv3f(0.f, 1.f, 0.f), 180.f)(T);
+    v3f axis = affine(T).col(2);
+    axis /= axis.norm2();
+    Translate(-axis*m_geometry.dist)(T);
+    m_primitive->setTransform(T);
+
+    m_primitive->setName("camera screen");
+
+    m_primitive->setSurfaceProperties(std::make_shared<CameraSurfProp>(m_geometry, m_canvas, transform()));
+}
+
 QImage SimpleCamera::image() const
 {
     QImage image(m_geometry.resx, m_geometry.resy, QImage::Format_RGB32);
@@ -162,23 +184,7 @@ void SimpleCamera::read(const QVariant &v)
         m_geometry = g;
     });
 
-    m_canvas.resize(m_geometry.resx * m_geometry.resy);
-    std::fill(m_canvas.begin(), m_canvas.end(), fsmx::zero<v3f>());
-
-    m_primitive = std::make_shared<Rectangle>(
-                m_geometry.screenWidth(),
-                m_geometry.screenHeight()
-                );
-
-    m4f T = transform();
-    v3f axis = affine(T).col(2);
-    axis /= axis.norm2();
-    Translate(-axis*m_geometry.dist)(T);
-    m_primitive->setTransform(T);
-
-    m_primitive->setName("camera screen");
-
-    m_primitive->setSurfaceProperties(std::make_shared<CameraSurfProp>(m_geometry, m_canvas, transform()));
+    clear();
 }
 
 } // end namespace raytracer

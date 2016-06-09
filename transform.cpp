@@ -31,6 +31,10 @@ void Translate::operator()(m4f& transform) const
 
 REGISTER_GENERATOR(Rotate)
 
+Rotate::Rotate() : m_axis(mkv3f(0.f, 0.f, 1.f)), m_angle(0.f) {}
+
+Rotate::Rotate(const v3f &axis, float degrees) : m_axis(axis), m_angle(degrees) {}
+
 void Rotate::read(const QVariant& v)
 {
     QVariantMap m = safeVariantMap(v);

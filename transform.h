@@ -35,6 +35,8 @@ class Rotate : public Transform
 {
     DECL_GENERATOR(Rotate)
 public:
+    Rotate();
+    Rotate(const v3f& axis, float degrees);
     void read(const QVariant& v);
     void operator()(m4f& transform) const;
 

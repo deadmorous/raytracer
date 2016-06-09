@@ -18,6 +18,12 @@ public:
     /// \brief Default constructor.
     Camera();
 
+    /// \brief Clears canvas and re-creates primitive.
+    ///
+    /// \note Must be called after setTransform() and probably
+    /// other methods of a derived class.
+    virtual void clear() = 0;
+
     /// \brief Returns primitive that represents
     /// camera screen.
     virtual Primitive::Ptr cameraPrimitive() const = 0;

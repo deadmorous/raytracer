@@ -56,7 +56,6 @@ public:
         }
     };
 
-    /// \brief Default constructor
     SimpleCamera();
 
     /// \brief Sets camera geometry returns *this.
@@ -64,6 +63,8 @@ public:
 
     /// \brief Returns camera geometry.
     Geometry geometry() const;
+
+    void clear();
 
     Primitive::Ptr cameraPrimitive() const;
 

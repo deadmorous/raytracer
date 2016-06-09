@@ -10,6 +10,8 @@
 #include "serial.h"
 #include "ray.h"
 
+#include <QTime>
+
 // deBUG, TODO: Comment out
 // #define DEBUG_RAY_BOUNCES
 
@@ -59,6 +61,7 @@ public:
             return *this;
         }
     };
+    typedef std::function<void(float, bool, quint64)> ProgressCallback;
 
     RayTracer();
 
@@ -86,10 +89,23 @@ public:
     /// \brief Reads scene and camera from variant
     void read(const QVariant& v);
 
-
-
-    /// \brief Starts ray tracing
+    /// \brief Starts ray tracing.
     void run();
+
+    /// \brief Requests the ray tracing to stop.
+    void requestTermination();
+
+    /// \brief Sets progress callback
+    /// \param cb Callback to be called during the ray tracing process.
+    /// The callback is given three arguments:
+    ///   - progress in the range [0, 1];
+    ///   - flag indicating the final call of the callback when the ray tracing finishes;
+    ///   - total number of rays emitted.
+    ///   .
+    /// \param msecInterval Interval, in milliseconds, between successive callback call;
+    /// \param raysGranularity Number of rays processed between successive time measurements.
+    /// Low values can have an impact on the performance!
+    void setProgressCallback(ProgressCallback cb, int msecInterval = 1000, quint64 raysGranularity = 100000);
 
 private:
     Scene m_scene;
@@ -153,6 +169,13 @@ private:
     }
 
     quint64 m_lastRayNumber;
+    ProgressCallback m_cb;
+    int m_cbMsecInterval;
+    quint64 m_cbRaysGranularity;
+    QTime m_cbLastTime;
+    class ScopedCallbackCaller;
+    friend class ScopedCallbackCaller;
+    bool m_terminationRequested;
 
 #ifdef DEBUG_RAY_BOUNCES
     enum { DebugMaxRayBounceChains = 1000 };

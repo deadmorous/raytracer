@@ -5,6 +5,7 @@
 #include <QLabel>
 
 #include "ray_tracer.h"
+#include "ray_tracer_controller.h"
 
 namespace Ui {
 class MainWindow;
@@ -26,8 +27,16 @@ public slots:
     void openScene(const QString& fileName);
     void saveRayTracerImage();
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
+private slots:
+    void rayTracerProgress(float progress, quint64 raysProcessed);
+    void rayTracerFinished();
+
 private:
     raytracer::RayTracer m_rayTracer;
+    raytracer::RayTracerController m_rayTracerController;
 };
 
 #endif // MAINWINDOW_H

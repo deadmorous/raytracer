@@ -3,6 +3,7 @@
 
 #include "ray_tracer.h"
 #include "surface_properties.h"
+#include "cxx_exception.h"
 
 #ifdef DEBUG_RAY_BOUNCES
 #include <QDebug>
@@ -10,9 +11,36 @@
 
 namespace raytracer {
 
+class RayTracer::ScopedCallbackCaller
+{
+public:
+    ScopedCallbackCaller(RayTracer& rt) : m_rt(rt) {}
+    ~ScopedCallbackCaller() {
+        if (m_rt.m_cbMsecInterval > 0   &&
+                m_rt.m_lastRayNumber % m_rt.m_cbRaysGranularity == 0) {
+            if (m_rt.m_cbLastTime.elapsed() >= m_rt.m_cbMsecInterval)  {
+                float progress = static_cast<float>(m_rt.m_lastRayNumber) / m_rt.m_options.totalRayLimit;
+                m_rt.m_cb(progress, false, m_rt.m_lastRayNumber);
+                m_rt.m_cbLastTime.restart();
+            }
+        }
+    }
+private:
+    RayTracer& m_rt;
+};
+
+
+
+CTM_DECL_EXCEPTION(RayTracerTerminationException, cxx::exception)
+
+
+
 RayTracer::RayTracer() :
     m_collisionDataBufferSize(0),
-    m_lastRayNumber(0)
+    m_lastRayNumber(0),
+    m_cbMsecInterval(0),
+    m_cbRaysGranularity(100000),
+    m_terminationRequested(false)
 {
 }
 
@@ -49,8 +77,15 @@ RayTracer::Options RayTracer::options() const {
 
 void RayTracer::processRay(const Ray& ray)
 {
+    if (m_terminationRequested)
+        throw RayTracerTerminationException();
+
     if (m_lastRayNumber >= m_options.totalRayLimit)
         return;
+
+    ++m_lastRayNumber;
+    ScopedCallbackCaller scc(*this);
+
     if (ray.generation > m_options.reflectionLimit) {
         // No collisions occurred
         FINISH_RAY_BOUNCE_CHAIN(ray, RayBounceChainReflectionLimitReached);
@@ -60,8 +95,6 @@ void RayTracer::processRay(const Ray& ray)
         FINISH_RAY_BOUNCE_CHAIN(ray, RayBounceChainColorThresholdReached);
         return;
     }
-
-    ++m_lastRayNumber;
 
     // Find candidates for collisions
     auto r = m_psearch.find(ray);
@@ -191,7 +224,10 @@ void RayTracer::run()
     for (Primitive::Ptr p : m_scene.primitives())
         m_psearch.add(p.get());
     if (m_camera)
+    {
+        m_camera->clear();
         m_psearch.add(m_camera->cameraPrimitive().get());
+    }
 
     auto lights = m_scene.lightSources();
 
@@ -206,10 +242,38 @@ void RayTracer::run()
         // Zero rays per light, nothing to do
         return;
 
-    // Emit rays from light sources
-    foreach (const LightSource::Ptr& light, lights) {
-        light->emitRays(raysPerLight, *this);
+    // Start counting the time
+    m_cbLastTime.start();
+
+    // Clear termination request flag
+    m_terminationRequested = false;
+
+    try {
+        // Emit rays from light sources
+        foreach (const LightSource::Ptr& light, lights) {
+            light->emitRays(raysPerLight, *this);
+        }
     }
+    catch (const RayTracerTerminationException&)
+    {
+    }
+
+    if (m_cbMsecInterval > 0)
+        // Invoke the progress callback last time
+        m_cb(1.0f, true, m_lastRayNumber);
+}
+
+void RayTracer::requestTermination()
+{
+    m_terminationRequested = true;
+}
+
+void RayTracer::setProgressCallback(ProgressCallback cb, int msecInterval, quint64 raysGranularity)
+{
+    Q_ASSERT(cb);
+    m_cb = cb;
+    m_cbMsecInterval = msecInterval;
+    m_cbRaysGranularity = raysGranularity;
 }
 
 } // end namespace raytracer
