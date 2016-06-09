@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include <QTime>
 
 #include "ray_tracer.h"
 #include "ray_tracer_controller.h"
@@ -37,6 +38,7 @@ private slots:
 private:
     raytracer::RayTracer m_rayTracer;
     raytracer::RayTracerController m_rayTracerController;
+    QTime m_startTime;
 };
 
 #endif // MAINWINDOW_H

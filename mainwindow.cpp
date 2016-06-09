@@ -54,6 +54,7 @@ void MainWindow::openScene(const QString& fileName)
         if (cam) {
             ui->label->setText(QString());
             ui->label->setPixmap(QPixmap::fromImage(cam->image()));
+            m_startTime.start();
             m_rayTracerController.start();
             ui->actionSaveRaytracerImage->setEnabled(true);
         }
@@ -84,13 +85,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::rayTracerProgress(float progress, quint64 raysProcessed)
 {
     ui->statusBar->showMessage(
-                tr("Tracing scene: %1 of %2 rays, %3% done")
+                tr("Tracing scene: %1 of %2 rays, %3% done, %4 s")
                 .arg(QString::number(static_cast<double>(raysProcessed), 'e', 3))
                 .arg(QString::number(static_cast<double>(m_rayTracer.options().totalRayLimit), 'e', 3))
-                .arg(progress*100));
+                .arg(progress*100)
+                .arg(m_startTime.elapsed()/1000.));
 }
 
 void MainWindow::rayTracerFinished()
 {
-    ui->statusBar->showMessage(tr("Raytracer finished"));
+    ui->statusBar->showMessage(tr("Raytracer finished, %1 s elapsed").arg(m_startTime.elapsed()/1000.));
 }
