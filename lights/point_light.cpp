@@ -4,7 +4,7 @@
 #include "point_light.h"
 #include "ray_tracer.h"
 #include "ray.h"
-#include "rnd.h"
+#include "math_util.h"
 
 namespace raytracer {
 
@@ -17,9 +17,6 @@ PointLight::PointLight() :
 
 void PointLight::emitRays(quint64 count, RayTracer& rayTracer) const
 {
-    // Initialize random generation facilities
-    auto& gen = rnd::gen();
-    std::uniform_real_distribution<float> dis(-1.f, 1.f);
 
     // Obtain light source origin
     v3f origin = translation(transform());
@@ -27,19 +24,8 @@ void PointLight::emitRays(quint64 count, RayTracer& rayTracer) const
     // Emit count rays in random directions
     for (quint64 i=0; i<count; ++i)
     {
-        // Generate random direction
-        v3f dir;
-        forever {
-            dir = mkv3f(dis(gen), dis(gen), dis(gen));
-            float dirNorm = dir.norm2();
-            if (dirNorm == 0.f)
-                continue;
-            dir /= dirNorm;
-            break;
-        }
-
-        // Emit ray
-        rayTracer.processRay(Ray(origin, dir, m_color, 0));
+        // Emit ray in random direction
+        rayTracer.processRay(Ray(origin, randomPointOnUnitSphere(), m_color, 0));
     }
 }
 

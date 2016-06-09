@@ -65,6 +65,12 @@ template<> inline QString fromVariant(const QVariant& v)
     return v.toString();
 }
 
+template<> inline bool fromVariant(const QVariant& v)
+{
+    Q_ASSERT(v.canConvert<bool>());
+    return v.toBool();
+}
+
 
 
 /// \brief Interface of a readable object.

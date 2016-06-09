@@ -75,6 +75,7 @@ public:
 private:
     Primitive::Ptr m_primitive;
     Geometry m_geometry;
+    bool m_filterImage;
     std::vector< v3f > m_canvas;
 };
 

@@ -85,9 +85,9 @@ private:
 
 REGISTER_GENERATOR(SimpleCamera)
 
-SimpleCamera::SimpleCamera()
+SimpleCamera::SimpleCamera() :
+    m_filterImage(true)
 {
-
 }
 
 Primitive::Ptr SimpleCamera::cameraPrimitive() const
@@ -123,18 +123,22 @@ QImage SimpleCamera::image() const
     if (m_canvas.empty())
         return image;
 
-    // Postprocess image
     decltype(m_canvas) ppcanvas(m_canvas.size(), fsmx::zero<v3f>());
-    for (int row=1; row+1<m_geometry.resx; ++row)
-        for (int col=1; col+1<m_geometry.resy; ++col)
-        {
-            int index = col + row*m_geometry.resx;
-            v3f& dst = ppcanvas[index];
-            for (int ir=-1; ir<2; ++ir)
-                for (int ic=-1; ic<2; ++ic) {
-                    dst += m_canvas[index + ic + ir*m_geometry.resx];
-                }
-        }
+    if (m_filterImage) {
+        // Postprocess image
+        for (int row=1; row+1<m_geometry.resx; ++row)
+            for (int col=1; col+1<m_geometry.resy; ++col)
+            {
+                int index = col + row*m_geometry.resx;
+                v3f& dst = ppcanvas[index];
+                for (int ir=-1; ir<2; ++ir)
+                    for (int ic=-1; ic<2; ++ic) {
+                        dst += m_canvas[index + ic + ir*m_geometry.resx];
+                    }
+            }
+    }
+    else
+        std::copy(m_canvas.begin(), m_canvas.end(), ppcanvas.begin());
 
     // Determine canvas color range
     auto minIntensity = ppcanvas[0][0];
@@ -173,7 +177,10 @@ void SimpleCamera::read(const QVariant &v)
     Camera::read(v);
 
     m_geometry = Geometry();
-    readOptionalProperty(v, "geometry", [this](const QVariant& v) {
+    m_filterImage = true;
+
+    QVariantMap m = safeVariantMap(v);
+    readOptionalProperty(m, "geometry", [this](const QVariant& v) {
         Geometry g;
         QVariantMap m = safeVariantMap(v);
         readOptionalProperty(g.fovy, m, "fovy");
@@ -183,6 +190,7 @@ void SimpleCamera::read(const QVariant &v)
         readOptionalProperty(g.resy, m, "resy");
         m_geometry = g;
     });
+    readOptionalProperty(m_filterImage, m, "filter_image");
 
     clear();
 }

@@ -29,6 +29,7 @@ class SimpleDiffuseSurface : public SurfaceProperties
 
 private:
     v3f m_color;
+    float m_translucency;
 };
 
 

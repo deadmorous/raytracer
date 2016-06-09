@@ -1,14 +1,15 @@
 #include "surfprop/simple_diffuse_surface.h"
 #include "ray_tracer.h"
 #include "ray.h"
-#include "rnd.h"
+#include "math_util.h"
 
 namespace raytracer {
 
 REGISTER_GENERATOR(SimpleDiffuseSurface)
 
 SimpleDiffuseSurface::SimpleDiffuseSurface():
-    m_color(mkv3f(1.f, 1.f, 1.f))
+    m_color(mkv3f(1.f, 1.f, 1.f)),
+    m_translucency(0.f)
 {
 }
 
@@ -24,27 +25,17 @@ void SimpleDiffuseSurface::processCollision(
             ray.color[1]*m_color[1],
             ray.color[2]*m_color[2]);
 
-    auto& gen = rnd::gen();
-    std::uniform_real_distribution<float> d1(-1.f, 1.f), d2(0.f, 1.f);
-    v3f dir;
-    forever {
-        dir = mkv3f(d1(gen), d1(gen), d2(gen));
-        float dirNorm = dir.norm2();
-        if (dirNorm == 0.f)
-            continue;
-        dir /= dirNorm;
-        break;
-    }
-
     v3f n = spnormal(surfacePoint);
-    if (dot(n, ray.dir) > 0)
+    bool reflect;
+    if (m_translucency == 0.f)
+        reflect = true;
+    else if (m_translucency == 1.f)
+        reflect = false;
+    else
+        reflect = std::uniform_real_distribution<float>(0.f, 1.f)(rnd::gen()) > m_translucency;
+    if ((dot(n, ray.dir) > 0) == reflect)
         n = -n;
-    if (!(n[0] == 0.f && n[1] == 0.f && n[2] > 0)) {
-        v3f p = n;
-        p[2] -= 1;
-        p /= p.norm2();
-        dir -= p*(2*dot(p, dir));
-    }
+    v3f dir = randomPointOnUnitSemiSphere(n);
 
     rayTracer.processRay(Ray(
         sppos(surfacePoint),
@@ -62,7 +53,10 @@ void SimpleDiffuseSurface::processCollision(
 void SimpleDiffuseSurface::read(const QVariant &v)
 {
     m_color = mkv3f(1.f, 1.f, 1.f);
+    m_translucency = 0.f;
+
     readOptionalProperty(m_color, v, "color");
+    readOptionalProperty(m_translucency, v, "translucency");
 }
 
 } // end namespace raytracer

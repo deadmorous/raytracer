@@ -74,6 +74,7 @@ HEADERS  += mainwindow.h \
     surfprop/simple_diffuse_surface.h \
     surfprop/s_p_matt.h \
     ray_tracer_controller.h \
-    primitives/single_sided_rectangle.h
+    primitives/single_sided_rectangle.h \
+    math_util.h
 
 FORMS    += mainwindow.ui
