@@ -27,6 +27,7 @@ public slots:
     void openScene();
     void openScene(const QString& fileName);
     void saveRayTracerImage();
+    void imageProcessorChanged(raytracer::ImageProcessor::Ptr imgProc);
 
 protected:
     void closeEvent(QCloseEvent *event);

@@ -36,6 +36,8 @@ public:
     void setImageProcessor(const ImageProcessor::Ptr& imageProcessor);
     ImageProcessor::Ptr imageProcessor() const;
 
+    RayTracer& rayTracer() const;
+
 signals:
     void rayTracerImageUpdated(const QPixmap& pixmap);
     void rayTracerProgress(float progress, quint64 raysProcessed);

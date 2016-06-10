@@ -8,6 +8,8 @@ REGISTER_GENERATOR(AverageImage)
 
 REGISTER_GENERATOR(ClampImage)
 
+REGISTER_GENERATOR(LogScaleImage)
+
 REGISTER_GENERATOR(CombinedImageProcessor)
 
 } // end namespace raytracer

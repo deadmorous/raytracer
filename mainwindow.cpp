@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "serial.h"
+#include "image_processor_controller.h"
 #include <QApplication>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -28,6 +29,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&m_rayTracerController, SIGNAL(rayTracerImageUpdated(QPixmap)), ui->label, SLOT(setPixmap(QPixmap)), Qt::QueuedConnection);
     connect(&m_rayTracerController, SIGNAL(rayTracerProgress(float,quint64)), SLOT(rayTracerProgress(float,quint64)), Qt::QueuedConnection);
     connect(&m_rayTracerController, SIGNAL(rayTracerFinished()), SLOT(rayTracerFinished()));
+
+    auto ic = new raytracer::ImageProcessorController(this);
+    ui->menuBar->addMenu(ic->menu());
+    connect(ic, SIGNAL(imageProcessorChanged(raytracer::ImageProcessor::Ptr)), SLOT(imageProcessorChanged(raytracer::ImageProcessor::Ptr)));
 }
 
 MainWindow::~MainWindow()
@@ -77,6 +82,19 @@ void MainWindow::saveRayTracerImage()
         fileName += ".png";
     Q_ASSERT(ui->label->pixmap());
     ui->label->pixmap()->save(fileName);
+}
+
+void MainWindow::imageProcessorChanged(raytracer::ImageProcessor::Ptr imgProc)
+{
+    m_rayTracerController.setImageProcessor(imgProc);
+    if (!m_rayTracerController.isRunning())
+    {
+        auto cam = m_rayTracer.camera();
+        if (cam)
+            ui->label->setPixmap(QPixmap::fromImage((*imgProc)(cam->canvas()).toImage()));
+        else
+            ui->statusBar->showMessage(tr("No camera was found"));
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

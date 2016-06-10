@@ -64,4 +64,8 @@ ImageProcessor::Ptr RayTracerController::imageProcessor() const
     return m_imageProcessor;
 }
 
+RayTracer& RayTracerController::rayTracer() const {
+    return m_rt;
+}
+
 } // end namespace raytracer

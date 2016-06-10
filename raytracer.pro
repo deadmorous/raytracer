@@ -39,7 +39,8 @@ SOURCES += main.cpp\
         surfprop/s_p_matt.cpp \
     ray_tracer_controller.cpp \
     primitives/single_sided_rectangle.cpp \
-    image_processor.cpp
+    image_processor.cpp \
+    image_processor_controller.cpp
 
 HEADERS  += mainwindow.h \
     compile_assert.h \
@@ -77,6 +78,7 @@ HEADERS  += mainwindow.h \
     ray_tracer_controller.h \
     primitives/single_sided_rectangle.h \
     math_util.h \
-    image_processor.h
+    image_processor.h \
+    image_processor_controller.h
 
 FORMS    += mainwindow.ui

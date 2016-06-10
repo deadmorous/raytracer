@@ -73,6 +73,41 @@ private:
     float m_clampValue;
 };
 
+class LogScaleImage : public ImageProcessor
+{
+    DECL_GENERATOR(LogScaleImage)
+public:
+    LogScaleImage() : m_threshold(0.1f) {}
+    explicit LogScaleImage(float threshold) : m_threshold(threshold) {}
+    Camera::Canvas operator()(const Camera::Canvas& canvas) const
+    {
+        if (m_threshold <= 0.f || m_threshold > 1.f)
+            return canvas;
+        float maxValue = 0.f;
+        for (const v3f& pixel : canvas)
+            for (int i=0; i<3; ++i)
+                if (maxValue < pixel[i])
+                    maxValue = pixel[i];
+        Camera::Canvas result = canvas;
+        for (v3f& pixel : result)
+            for (int i=0; i<3; ++i) {
+                float& v = pixel[i];
+                v /= maxValue;
+                if (v <= m_threshold)
+                    v = 0.f;
+                else
+                    v = log(v/m_threshold);
+            }
+        return result;
+    }
+    void read(const QVariant &v) {
+        m_threshold = fromVariant<float>(v);
+    }
+
+private:
+    float m_threshold;
+};
+
 class CombinedImageProcessor : public ImageProcessor
 {
     DECL_GENERATOR(CombinedImageProcessor)
@@ -87,7 +122,7 @@ public:
     Camera::Canvas operator()(const Camera::Canvas& canvas) const {
         Camera::Canvas result = canvas;
         for (ImageProcessor::Ptr proc : m_imageProcessors)
-            result = (*proc)(canvas);
+            result = (*proc)(result);
         return result;
     }
     void read(const QVariant &v) {
