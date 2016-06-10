@@ -39,7 +39,7 @@ int runInBatchMode(QString sceneFileName, QString imageFileName)
         rayTracer.run();
         cout << defaultfloat;
         cout << "Time elapsed (sec): " << time.elapsed() / 1000. << endl;
-        cam->image().save(imageFileName);
+        (*rayTracer.imageProcessor())(cam->canvas()).toImage().save(imageFileName);
         return 0;
     }
     catch(const std::exception& e) {

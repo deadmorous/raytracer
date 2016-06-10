@@ -9,6 +9,7 @@
 #include "primitive_search.h"
 #include "serial.h"
 #include "ray.h"
+#include "image_processor.h"
 
 #include <QTime>
 
@@ -107,9 +108,16 @@ public:
     /// Low values can have an impact on the performance!
     void setProgressCallback(ProgressCallback cb, int msecInterval = 1000, quint64 raysGranularity = 100000);
 
+    /// \brief Sets image processor
+    void setImageProcessor(const ImageProcessor::Ptr& imageProcessor);
+
+    /// \brief Returns image processor
+    ImageProcessor::Ptr imageProcessor() const;
+
 private:
     Scene m_scene;
     Camera::Ptr m_camera;
+    ImageProcessor::Ptr m_imageProcessor;
     Options m_options;
 
     PrimitiveSearch m_psearch;

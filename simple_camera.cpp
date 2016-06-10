@@ -14,7 +14,7 @@ namespace {
 class CameraSurfProp : public SurfaceProperties
 {
 public:
-    CameraSurfProp(const SimpleCamera::Geometry& geom, std::vector< v3f >& canvas, const m4f& transform) :
+    CameraSurfProp(const SimpleCamera::Geometry& geom, Camera::Canvas& canvas, const m4f& transform) :
         m_geom(geom),
         m_canvas(canvas),
         m_transform(transform),
@@ -43,15 +43,12 @@ public:
         re[1] = 0.5*(re[1]+1) * m_geom.resy;
         //*/
 
-        int x = static_cast<int>(re[0]);
-        int y = static_cast<int>(re[1]);
-        if (x < 0   ||   x >= m_geom.resx   ||
-            y < 0   ||   y >= m_geom.resy)
+        auto xy = mkv2i(static_cast<int>(re[0]), static_cast<int>(re[1]));  // TODO better
+        if (!m_canvas.contains(xy))
             return;
-        int index = x + y*m_geom.resx;
-        Q_ASSERT(index >= 0   &&   index < static_cast<int>(m_canvas.size()));
+
         //*
-        m_canvas[index] += ray.color;
+        m_canvas[xy] += ray.color;
         /*/
         auto& pixel = m_canvas[index];
         for (int i=0; i<3; ++i)
@@ -62,7 +59,7 @@ public:
 
 private:
     const SimpleCamera::Geometry& m_geom;
-    std::vector< v3f >& m_canvas;
+    Camera::Canvas& m_canvas;
     const m4f& m_transform;
 
     typedef fsmx::MX< fsmx::Data< 3, 4, float > > m3x4f;
@@ -97,8 +94,7 @@ Primitive::Ptr SimpleCamera::cameraPrimitive() const
 
 void SimpleCamera::clear()
 {
-    m_canvas.resize(m_geometry.resx * m_geometry.resy);
-    std::fill(m_canvas.begin(), m_canvas.end(), fsmx::zero<v3f>());
+    m_canvas = Canvas(mkv2i(m_geometry.resx, m_geometry.resy));
 
     m_primitive = std::make_shared<SingleSidedRectangle>(
                 m_geometry.screenWidth(),
@@ -117,59 +113,8 @@ void SimpleCamera::clear()
     m_primitive->setSurfaceProperties(std::make_shared<CameraSurfProp>(m_geometry, m_canvas, transform()));
 }
 
-QImage SimpleCamera::image() const
-{
-    QImage image(m_geometry.resx, m_geometry.resy, QImage::Format_RGB32);
-    if (m_canvas.empty())
-        return image;
-
-    decltype(m_canvas) ppcanvas(m_canvas.size(), fsmx::zero<v3f>());
-    if (m_filterImage) {
-        // Postprocess image
-        for (int row=1; row+1<m_geometry.resx; ++row)
-            for (int col=1; col+1<m_geometry.resy; ++col)
-            {
-                int index = col + row*m_geometry.resx;
-                v3f& dst = ppcanvas[index];
-                for (int ir=-1; ir<2; ++ir)
-                    for (int ic=-1; ic<2; ++ic) {
-                        dst += m_canvas[index + ic + ir*m_geometry.resx];
-                    }
-            }
-    }
-    else
-        std::copy(m_canvas.begin(), m_canvas.end(), ppcanvas.begin());
-
-    // Determine canvas color range
-    auto minIntensity = ppcanvas[0][0];
-    auto maxIntensity = minIntensity;
-    std::for_each(ppcanvas.begin(), ppcanvas.end(), [&minIntensity, &maxIntensity](const v3f& color) {
-        for (int i=0; i< 3; ++i) {
-            auto intensity = color[i];
-            if (minIntensity > intensity)
-                minIntensity = intensity;
-            else if (maxIntensity < intensity)
-                maxIntensity = intensity;
-        }
-    });
-
-    // In case of monotonous color, return all-black or all-gray image
-    if (minIntensity == maxIntensity) {
-        image.fill(minIntensity == 0.f ?   0xff000000u :   0xff888888u);
-        return image;
-    }
-
-    // Copy canvas pixels to the image
-    uchar *bits = image.bits();
-    std::for_each(ppcanvas.begin(), ppcanvas.end(), [&minIntensity, &maxIntensity, &bits](const v3f& color) {
-        bits[3] = 0xff;
-        for (int i=0; i<3; ++i) {
-            auto normalizedIntensity = (color[i] - minIntensity) / (maxIntensity - minIntensity);
-            bits[2-i] = static_cast<uchar>(normalizedIntensity * 255.999);
-        }
-        bits += 4;
-    });
-    return image;
+const Camera::Canvas& SimpleCamera::canvas() const {
+    return m_canvas;
 }
 
 void SimpleCamera::read(const QVariant &v)

@@ -36,6 +36,7 @@ CTM_DECL_EXCEPTION(RayTracerTerminationException, cxx::exception)
 
 
 RayTracer::RayTracer() :
+    m_imageProcessor(IdentityImageProcessor::newInstance()),
     m_collisionDataBufferSize(0),
     m_lastRayNumber(0),
     m_cbMsecInterval(0),
@@ -205,6 +206,7 @@ void RayTracer::read(const QVariant& v)
     QVariantMap m = safeVariantMap(v);
     m_scene.read(readProperty(m, "scene"));
     readTypedProperty(m_camera, m, "camera");
+    readOptionalTypedProperty(m_imageProcessor, m, "imgproc");
     readOptionalProperty(m, "options", [this](const QVariant& v) {
         QVariantMap m = safeVariantMap(v);
         readOptionalProperty(m_options.totalRayLimit, m, "max_rays");
@@ -274,6 +276,16 @@ void RayTracer::setProgressCallback(ProgressCallback cb, int msecInterval, quint
     m_cb = cb;
     m_cbMsecInterval = msecInterval;
     m_cbRaysGranularity = raysGranularity;
+}
+
+void RayTracer::setImageProcessor(const ImageProcessor::Ptr& imageProcessor)
+{
+    m_imageProcessor = imageProcessor;
+}
+
+ImageProcessor::Ptr RayTracer::imageProcessor() const
+{
+    return m_imageProcessor;
 }
 
 } // end namespace raytracer

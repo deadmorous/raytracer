@@ -53,7 +53,9 @@ void MainWindow::openScene(const QString& fileName)
         Camera::Ptr cam = m_rayTracer.camera();
         if (cam) {
             ui->label->setText(QString());
-            ui->label->setPixmap(QPixmap::fromImage(cam->image()));
+            auto imgProc = m_rayTracer.imageProcessor();
+            ui->label->setPixmap(QPixmap::fromImage((*imgProc)(cam->canvas()).toImage()));
+            m_rayTracerController.setImageProcessor(imgProc);
             m_startTime.start();
             m_rayTracerController.start();
             ui->actionSaveRaytracerImage->setEnabled(true);
@@ -73,7 +75,8 @@ void MainWindow::saveRayTracerImage()
         return;
     if (fileName.indexOf(QRegExp("\\.png$|\\.jpe?g$")) == -1)
         fileName += ".png";
-    m_rayTracer.camera()->image().save(fileName);
+    Q_ASSERT(ui->label->pixmap());
+    ui->label->pixmap()->save(fileName);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

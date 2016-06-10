@@ -68,7 +68,7 @@ public:
 
     Primitive::Ptr cameraPrimitive() const;
 
-    QImage image() const;
+    const Canvas& canvas() const;
 
     void read(const QVariant &v);
 
@@ -76,7 +76,7 @@ private:
     Primitive::Ptr m_primitive;
     Geometry m_geometry;
     bool m_filterImage;
-    std::vector< v3f > m_canvas;
+    Canvas m_canvas;
 };
 
 } // end namespace raytracer

@@ -109,5 +109,10 @@
         max_rays: 10000000000,
         max_reflections: 6,
         intensity_threshold: 0.02
-    }
+    },
+    imgproc: ['CombinedImageProcessor', [
+            ['ClampImage', 1]
+            // , ['AverageImage', {}]
+        ]
+    ]
 }

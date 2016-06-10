@@ -48,6 +48,18 @@ inline v2f mkv2f(float x1, float x2)
     return fsmx::mxMake<v2f>(x1, x2);
 }
 
+/// \brief 2D vector with integer coordinates.
+typedef fsmx::MX< fsmx::Data<2,1,int> > v2i;
+
+/// \brief Returns 2D vector with specified integer coordinates.
+/// \param x1 First coordinate.
+/// \param x2 Second coordinate.
+/// \return Vector with coordinates \a x1, \a x2.
+inline v2i mkv2i(int x1, int x2)
+{
+    return fsmx::mxMake<v2i>(x1, x2);
+}
+
 /// \brief Conversion of vectors
 template< class To, class From >
 inline To conv(const From& src);
