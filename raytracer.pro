@@ -41,7 +41,7 @@ SOURCES += main.cpp\
     primitives/single_sided_rectangle.cpp \
     image_processor.cpp \
     image_processor_controller.cpp \
-    scenes/flat_lens_camera.cpp
+    flat_lens_camera.cpp
 
 HEADERS  += mainwindow.h \
     compile_assert.h \
@@ -81,6 +81,6 @@ HEADERS  += mainwindow.h \
     math_util.h \
     image_processor.h \
     image_processor_controller.h \
-    scenes/flat_lens_camera.h
+    flat_lens_camera.h
 
 FORMS    += mainwindow.ui

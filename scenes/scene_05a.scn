@@ -1,0 +1,98 @@
+{
+    scene: {
+        primitives: [
+            ['Sphere', {
+                name: 'sphere',
+                radius: 0.25,
+                transform: ['Translate', [0, 0, -1]],
+                surf_prop: ['SimpleDiffuseSurface', {color: [1, 0, 0]}]
+            }],
+            ['Rectangle', {
+                name: 'front wall',
+                width: 3,
+                height: 3,
+                transform: ['Translate', [0, 0, -2]],
+                surf_prop: ['SimpleDiffuseSurface', {color: [0.5, 1, 0.5]}]
+            }],
+            ['Sphere', {
+                name: 'left wall',
+                radius: 4,
+                transform: ['Translate', [-4.891164992, 0, -0.5]],
+                surf_prop: ['ReflectionSurface', {reflectivity: [1, 1, 1]}]
+            }],
+            ['Rectangle', {
+                name: 'right wall',
+                width: 3,
+                height: 3,
+                transform: ['CombinedTransform', [
+                    ['Translate', [1.5, 0, -0.5]],
+                    ['Rotate', { axis: [0, 1, 0], angle: 90}]]
+                ],
+                surf_prop: ['SimpleDiffuseSurface', {color: [1, 1, 0.5]}]
+            }],
+            ['Rectangle', {
+                name: 'top wall',
+                width: 3,
+                height: 3,
+                transform: ['CombinedTransform', [
+                    ['Translate', [0, 1.5, -0.5]],
+                    ['Rotate', { axis: [1, 0, 0], angle: 90}]]
+                ],
+                surf_prop: ['SimpleDiffuseSurface', {color: [0.7, 1, 1]}]
+            }],
+            ['Rectangle', {
+                name: 'bottom wall',
+                width: 3,
+                height: 3,
+                transform: ['CombinedTransform', [
+                    ['Translate', [0, -1.5, -0.5]],
+                    ['Rotate', { axis: [1, 0, 0], angle: 90}]]
+                ],
+                surf_prop: ['SimpleDiffuseSurface', {color: [1, 0.5, 1]}]
+            }],
+            ['Rectangle', {
+                name: 'back wall',
+                width: 3,
+                height: 3,
+                transform: ['Translate', [0, 0, 1]],
+                surf_prop: ['SimpleDiffuseSurface', {color: [0.8, 0.8, 0.8]}]
+            }]/*,
+            ['Sphere', {
+                name: 'lampshade',
+                radius: 0.4,
+                transform: ['Translate', [1, 0, 0]],
+                surf_prop: ['SimpleDiffuseSurface', {color: [1, 1, 1], translucency: 1}]
+            }]*/
+        ],
+        lights: [
+            ['PointLight', {
+                transform: ['Translate', [1, 0, 0]],
+                color: [1, 1, 1]
+            }]
+        ]
+    },
+    camera: ['FlatLensCamera', {
+        transform: [
+            'CombinedTransform', [
+                ['Translate', [0.5,0,1]],
+                ['Rotate', { axis: [0,1,0], angle: 40 }]
+
+            ]
+        ],
+        geometry: {
+            fovy: 90,
+            //aspect: 1.7777777,   // 16/9
+            aspect: 1,
+            dist: 0.2,
+            // resx: 800,
+            resx: 450,
+            resy: 450
+        },
+        filter_image: false
+    }],
+    options: {
+        max_rays: 10000000000,
+        max_reflections: 6,
+        intensity_threshold: 0.02
+    }
+}
