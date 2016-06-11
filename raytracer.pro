@@ -40,7 +40,8 @@ SOURCES += main.cpp\
     ray_tracer_controller.cpp \
     primitives/single_sided_rectangle.cpp \
     image_processor.cpp \
-    image_processor_controller.cpp
+    image_processor_controller.cpp \
+    scenes/flat_lens_camera.cpp
 
 HEADERS  += mainwindow.h \
     compile_assert.h \
@@ -79,6 +80,7 @@ HEADERS  += mainwindow.h \
     primitives/single_sided_rectangle.h \
     math_util.h \
     image_processor.h \
-    image_processor_controller.h
+    image_processor_controller.h \
+    scenes/flat_lens_camera.h
 
 FORMS    += mainwindow.ui

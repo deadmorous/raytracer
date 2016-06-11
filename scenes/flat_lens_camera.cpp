@@ -1,9 +1,7 @@
 /// \file
-/// \brief Implementation of the SimpleCamera class.
+/// \brief Implementation of the FlatLensCamera class.
 
-#include "simple_camera.h"
-#include "primitives/single_sided_rectangle.h"
-#include "transform.h"
+#include "flat_lens_camera.h"
 #include "ray_tracer.h"
 #include "ray.h"
 
@@ -80,78 +78,12 @@ private:
 
 } // anonymous namespace
 
-REGISTER_GENERATOR(SimpleCamera)
+REGISTER_GENERATOR(FlatLensCamera)
 
-SimpleCamera::SimpleCamera() :
-    m_filterImage(true)
+void FlatLensCamera::clear()
 {
-}
-
-Primitive::Ptr SimpleCamera::cameraPrimitive() const
-{
-    return m_primitive;
-}
-
-void SimpleCamera::clear()
-{
-    m_canvas = Canvas(mkv2i(m_geometry.resx, m_geometry.resy));
-
-    m_primitive = std::make_shared<SingleSidedRectangle>(
-                m_geometry.screenWidth(),
-                m_geometry.screenHeight()
-                );
-
-    m4f T = transform();
-    Rotate(mkv3f(0.f, 1.f, 0.f), 180.f)(T);
-    v3f axis = affine(T).col(2);
-    axis /= axis.norm2();
-    Translate(-axis*m_geometry.dist)(T);
-    m_primitive->setTransform(T);
-
-    m_primitive->setName("camera screen");
-
-    m_primitive->setSurfaceProperties(std::make_shared<CameraSurfProp>(m_geometry, m_canvas, transform()));
-}
-
-const Camera::Canvas& SimpleCamera::canvas() const {
-    return m_canvas;
-}
-
-void SimpleCamera::read(const QVariant &v)
-{
-    Camera::read(v);
-
-    m_geometry = Geometry();
-    m_filterImage = true;
-
-    QVariantMap m = safeVariantMap(v);
-    readOptionalProperty(m, "geometry", [this](const QVariant& v) {
-        Geometry g;
-        QVariantMap m = safeVariantMap(v);
-        readOptionalProperty(g.fovy, m, "fovy");
-        readOptionalProperty(g.aspect, m, "aspect");
-        readOptionalProperty(g.dist, m, "dist");
-        readOptionalProperty(g.resx, m, "resx");
-        readOptionalProperty(g.resy, m, "resy");
-        m_geometry = g;
-    });
-    readOptionalProperty(m_filterImage, m, "filter_image");
-
-    clear();
-}
-
-const SimpleCamera::Geometry& SimpleCamera::geometry() const {
-    return m_geometry;
-}
-
-void SimpleCamera::setGeometry(const Geometry& geometry)
-{
-    m_geometry = geometry;
-    clear();
-}
-
-SimpleCamera::Canvas& SimpleCamera::canvasRef() {
-    return m_canvas;
+    SimpleCamera::clear();
+    cameraPrimitive()->setSurfaceProperties(std::make_shared<CameraSurfProp>(geometry(), canvasRef(), transform()));
 }
 
 } // end namespace raytracer

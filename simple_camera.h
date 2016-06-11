@@ -58,12 +58,6 @@ public:
 
     SimpleCamera();
 
-    /// \brief Sets camera geometry returns *this.
-    SimpleCamera& setGeometry(const Geometry& geometry);
-
-    /// \brief Returns camera geometry.
-    Geometry geometry() const;
-
     void clear();
 
     Primitive::Ptr cameraPrimitive() const;
@@ -71,6 +65,12 @@ public:
     const Canvas& canvas() const;
 
     void read(const QVariant &v);
+
+    const Geometry& geometry() const;
+    void setGeometry(const Geometry& geometry);
+
+protected:
+    Canvas& canvasRef();
 
 private:
     Primitive::Ptr m_primitive;
