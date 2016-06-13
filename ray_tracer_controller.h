@@ -13,12 +13,14 @@ class RayTracerThread : public QThread
 {
 public:
     explicit RayTracerThread(RayTracer& rt);
+    QString error() const;
 
 protected:
     void run();
 
 private:
     RayTracer& m_rt;
+    QString m_error;
 };
 
 
@@ -41,9 +43,13 @@ public:
 signals:
     void rayTracerImageUpdated(const QPixmap& pixmap);
     void rayTracerProgress(float progress, quint64 raysProcessed);
-    void rayTracerFinished();
+    void rayTracerFinished(const QString& error);
+
+private slots:
+    void rayTracerThreadFinished();
 
 private:
+    mutable QMutex m_mutex;
     RayTracer& m_rt;
     RayTracerThread m_rtThread;
     ImageProcessor::Ptr m_imageProcessor;

@@ -6,6 +6,10 @@
 #include "transform.h"
 #include "ray_tracer.h"
 #include "ray.h"
+#include "cxx_exception.h"
+
+#include <QFile>
+#include <QFileInfo>
 
 namespace raytracer {
 
@@ -14,12 +18,29 @@ namespace {
 class CameraSurfProp : public SurfaceProperties
 {
 public:
-    CameraSurfProp(const SimpleCamera::Geometry& geom, Camera::Canvas& canvas, const m4f& transform) :
+    CameraSurfProp(
+            const SimpleCamera::Geometry& geom,
+            const QString& raysOutputFileName,
+            Camera::Canvas& canvas,
+            const m4f& transform) :
         m_geom(geom),
+        m_raysOutputFileName(raysOutputFileName),
         m_canvas(canvas),
         m_transform(transform),
         m_ST(projectionMatrix() * transform.inv())
     {
+        if (m_raysOutputFileName.isEmpty())
+            m_writeRays = false;
+        else
+        {
+            QFileInfo fi(m_raysOutputFileName);
+            if (fi.exists())
+                throw cxx::exception(std::string("Rays output file '") + fi.absoluteFilePath().toStdString() + "' already exists");
+            m_raysOutputFile.setFileName(m_raysOutputFileName);
+            if (!m_raysOutputFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+                throw cxx::exception(std::string("Failed to open rays output '") + fi.absoluteFilePath().toStdString() + "'");
+            m_writeRays = true;
+        }
     }
 
     void processCollision(
@@ -29,6 +50,11 @@ public:
     {
         Q_UNUSED(rayTracer);
         Q_UNUSED(surfacePoint)
+
+        if (m_writeRays) {
+            Camera::RayData rd(ray, sppos(surfacePoint));
+            m_raysOutputFile.write(rd.rawData(), sizeof(rd));
+        }
 
 //        if (ray.generation == 0)
 //            // Ignore direct rays from light source
@@ -59,8 +85,11 @@ public:
 
 private:
     const SimpleCamera::Geometry& m_geom;
+    QString m_raysOutputFileName;
     Camera::Canvas& m_canvas;
     const m4f& m_transform;
+    bool m_writeRays;
+    mutable QFile m_raysOutputFile;
 
     typedef fsmx::MX< fsmx::Data< 3, 4, float > > m3x4f;
     m3x4f m_ST; // Transformation from world coordinates to screen coordinates
@@ -110,7 +139,10 @@ void SimpleCamera::clear()
 
     m_primitive->setName("camera screen");
 
-    m_primitive->setSurfaceProperties(std::make_shared<CameraSurfProp>(m_geometry, m_canvas, transform()));
+    m_primitive->setSurfaceProperties(std::make_shared<CameraSurfProp>(
+                                          m_geometry, m_raysOutputFileName, m_canvas, transform()));
+    if (!m_raysInputFileName.isEmpty())
+        readRays(m_raysInputFileName);
 }
 
 const Camera::Canvas& SimpleCamera::canvas() const {
@@ -123,6 +155,8 @@ void SimpleCamera::read(const QVariant &v)
 
     m_geometry = Geometry();
     m_filterImage = true;
+    m_raysOutputFileName.clear();
+    m_raysInputFileName.clear();
 
     QVariantMap m = safeVariantMap(v);
     readOptionalProperty(m, "geometry", [this](const QVariant& v) {
@@ -136,8 +170,8 @@ void SimpleCamera::read(const QVariant &v)
         m_geometry = g;
     });
     readOptionalProperty(m_filterImage, m, "filter_image");
-
-    clear();
+    readOptionalProperty(m_raysOutputFileName, m, "write_rays");
+    readOptionalProperty(m_raysInputFileName, m, "read_rays");
 }
 
 const SimpleCamera::Geometry& SimpleCamera::geometry() const {
@@ -148,10 +182,6 @@ void SimpleCamera::setGeometry(const Geometry& geometry)
 {
     m_geometry = geometry;
     clear();
-}
-
-SimpleCamera::Canvas& SimpleCamera::canvasRef() {
-    return m_canvas;
 }
 
 } // end namespace raytracer

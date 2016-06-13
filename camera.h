@@ -5,6 +5,7 @@
 #define CAMERA_H
 
 #include "primitive.h"
+#include "ray.h"
 
 class QImage;
 
@@ -61,6 +62,18 @@ public:
         std::vector< v3f > m_data;
     };
 
+    struct RayData {
+        Ray ray;
+        v3f collisionPos;
+        RayData() {}
+        RayData(const Ray& ray, const v3f collisionPos) :
+            ray(ray), collisionPos(collisionPos)
+        {}
+        const char *rawData() const {
+            return reinterpret_cast<const char*>(this);
+        }
+    };
+
     /// \brief Default constructor.
     Camera();
 
@@ -86,6 +99,8 @@ public:
     /// \brief Reads camera transformation.
     void read(const QVariant& v);
 
+    /// \brief Reads RayData from a file and processes the corresponding rays.
+    void readRays(const QString& fileName);
 private:
     m4f m_transform;
 };

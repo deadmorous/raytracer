@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QMessageBox>
 
 template< class F >
 inline void wrapSignalHandler(QWidget* parent, F f) {
@@ -28,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&m_rayTracerController, SIGNAL(rayTracerImageUpdated(QPixmap)), ui->label, SLOT(setPixmap(QPixmap)), Qt::QueuedConnection);
     connect(&m_rayTracerController, SIGNAL(rayTracerProgress(float,quint64)), SLOT(rayTracerProgress(float,quint64)), Qt::QueuedConnection);
-    connect(&m_rayTracerController, SIGNAL(rayTracerFinished()), SLOT(rayTracerFinished()));
+    connect(&m_rayTracerController, SIGNAL(rayTracerFinished(QString)), SLOT(rayTracerFinished(QString)));
 
     auto ic = new raytracer::ImageProcessorController(this);
     ui->menuBar->addMenu(ic->menu());
@@ -88,13 +89,7 @@ void MainWindow::imageProcessorChanged(raytracer::ImageProcessor::Ptr imgProc)
 {
     m_rayTracerController.setImageProcessor(imgProc);
     if (!m_rayTracerController.isRunning())
-    {
-        auto cam = m_rayTracer.camera();
-        if (cam)
-            ui->label->setPixmap(QPixmap::fromImage((*imgProc)(cam->canvas()).toImage()));
-        else
-            ui->statusBar->showMessage(tr("No camera was found"));
-    }
+        reloadImage();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -113,7 +108,21 @@ void MainWindow::rayTracerProgress(float progress, quint64 raysProcessed)
                 .arg(m_startTime.elapsed()/1000.));
 }
 
-void MainWindow::rayTracerFinished()
+void MainWindow::rayTracerFinished(QString error)
 {
+    if (!error.isEmpty())
+        QMessageBox::critical(this, QString(), error);
+    reloadImage();
     ui->statusBar->showMessage(tr("Raytracer finished, %1 s elapsed").arg(m_startTime.elapsed()/1000.));
+}
+
+void MainWindow::reloadImage()
+{
+    auto cam = m_rayTracer.camera();
+    if (cam) {
+        auto imgProc = m_rayTracerController.imageProcessor();
+        ui->label->setPixmap(QPixmap::fromImage((*imgProc)(cam->canvas()).toImage()));
+    }
+    else
+        ui->statusBar->showMessage(tr("No camera was found"));
 }

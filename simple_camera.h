@@ -69,13 +69,12 @@ public:
     const Geometry& geometry() const;
     void setGeometry(const Geometry& geometry);
 
-protected:
-    Canvas& canvasRef();
-
 private:
     Primitive::Ptr m_primitive;
     Geometry m_geometry;
     bool m_filterImage;
+    QString m_raysOutputFileName;
+    QString m_raysInputFileName;
     Canvas m_canvas;
 };
 

@@ -34,12 +34,14 @@ protected:
 
 private slots:
     void rayTracerProgress(float progress, quint64 raysProcessed);
-    void rayTracerFinished();
+    void rayTracerFinished(QString error);
 
 private:
     raytracer::RayTracer m_rayTracer;
     raytracer::RayTracerController m_rayTracerController;
     QTime m_startTime;
+
+    void reloadImage();
 };
 
 #endif // MAINWINDOW_H

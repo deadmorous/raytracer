@@ -3,6 +3,10 @@
 
 #include "camera.h"
 #include "transform.h"
+#include "cxx_exception.h"
+
+#include <QFile>
+#include <QFileInfo>
 #include <QImage>
 
 namespace raytracer {
@@ -28,6 +32,27 @@ void Camera::read(const QVariant& v)
     Transform::Ptr t;
     if (readOptionalTypedProperty(t, v, "transform"))
         (*t)(m_transform);
+}
+
+void Camera::readRays(const QString& fileName)
+{
+    QFile f(fileName);
+    if (!f.open(QIODevice::ReadOnly)) {
+        QFileInfo fi(fileName);
+        throw cxx::exception(std::string("Failed to open rays input '") + fi.absoluteFilePath().toStdString() + "'");
+    }
+    SurfaceProperties *surfProp = cameraPrimitive()->surfaceProperties().get();
+    Q_ASSERT(surfProp);
+    SurfacePoint sp = fsmx::zero<SurfacePoint>();
+    RayTracer *rt = nullptr;
+    const quint64 RayDataSize = sizeof(RayData);
+    forever {
+        RayData rd;
+        if (f.read(reinterpret_cast<char*>(&rd), RayDataSize) != RayDataSize)
+            break;
+        sppos(sp) = rd.collisionPos;
+        surfProp->processCollision(rd.ray, sp, *rt);
+    }
 }
 
 QImage Camera::Canvas::toImage() const
