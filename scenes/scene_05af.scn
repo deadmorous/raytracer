@@ -71,7 +71,7 @@
             }]
         ]
     },
-    camera: ['SimpleCamera', {
+    camera: ['FlatLensCamera', {
         transform: [
             'CombinedTransform', [
                 ['Translate', [0.5,0,1]],
@@ -81,17 +81,22 @@
         ],
         geometry: {
             fovy: 90,
-            //aspect: 1.7777777,   // 16/9
             aspect: 1,
             dist: 0.2,
-            // resx: 800,
             resx: 450,
-            resy: 450
+            resy: 450,
+            refraction_coeff: 1.001,
+            focus_dist: 2.5
         }
-        , write_rays: 'scene_05a.rays'
+        , read_rays: 'scene_05a.rays'
     }],
+    imgproc: ['CombinedImageProcessor', [
+        ['ClampImage', 10],
+        ['LogScaleImage', 0.07]
+    ]],
     options: {
-        max_rays: 1000000000,
+        // max_rays: 1000000000,
+        max_rays: 0,
         max_reflections: 6,
         intensity_threshold: 0.02
     }

@@ -83,7 +83,6 @@
 
             ]
         ],
-        refraction_coeff: 2,
         geometry: {
             fovy: 90,
             aspect: 1,
@@ -92,10 +91,8 @@
             resy: 450,
             refraction_coeff: 1.001,
             focus_dist: 4
-        },
-        filter_image: false
-        // , write_rays: 'scene_05f.rays'
-        , read_rays: 'scene_05f.rays'
+        }
+        , read_rays: 'scene_05.rays'
     }],
     imgproc: ['CombinedImageProcessor', [
         ['ClampImage', 10],
