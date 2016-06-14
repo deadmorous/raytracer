@@ -933,6 +933,8 @@ template< class M > inline M mxMake(CTM_FSMX_R x1, CTM_FSMX_R x2, CTM_FSMX_R x3,
     return m;
 }
 
+#undef CTM_FSMX_R
+
 template< class M > inline M zero()
 {
     M m;
@@ -964,7 +966,16 @@ inline typename D1::value_type dot(const MX<D1>& l, const MX<D2>& r)
     return result;
 }
 
-#undef CTM_FSMX_R
+template< class D1, class D2 >
+inline MX< Data<3, 1, typename D1::value_type> > cross(const MX<D1>& l, const MX<D2>& r)
+{
+    COMPILE_ASSERT(D1::Nr == 3   &&   D1::Nc == 1   &&   D2::Nr == 3   &&   D2::Nc == 1);
+    MX< Data<3, 1, typename D1::value_type> > result;
+    result[0] = l[1]*r[2] - l[2]*r[1];
+    result[1] = l[2]*r[0] - l[0]*r[2];
+    result[2] = l[0]*r[1] - l[1]*r[0];
+    return result;
+}
 
 } // end namespace fsmx
 

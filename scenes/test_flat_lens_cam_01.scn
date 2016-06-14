@@ -1,0 +1,47 @@
+{
+    scene: {
+        primitives: [
+            /*['Sphere', {
+                name: 'sphere',
+                radius: 0.25,
+                transform: ['Translate', [0, 0, -1]],
+                surf_prop: ['SimpleDiffuseSurface', {color: [1, 0, 0]}]
+            }]*/
+        ],
+        lights: [
+            ['PointLight', {
+                transform: ['Translate', [0, 0, 0]],
+                color: [1, 1, 1]
+            }]
+        ]
+    },
+    camera: ['FlatLensCamera', {
+        transform: [
+            'CombinedTransform', [
+                ['Translate', [0,0,1.1]],
+                ['Rotate', { axis: [0,1,0], angle: 0 }]
+
+            ]
+        ],
+        geometry: {
+            fovy: 90,
+            aspect: 1,
+            dist: 0.1,
+            resx: 450,
+            resy: 450,
+            refraction_coeff: 1.2,
+            focus_dist: 1
+        },
+        // , write_rays: 'test_flat_lens_cam_01.rays'
+        // , read_rays: 'test_flat_lens_cam_01.rays'
+    }],
+    imgproc: ['CombinedImageProcessor', [
+        ['ClampImage', 3]
+    ]],
+    options: {
+        max_rays: 1000000,
+        //max_rays: 0,
+        max_reflections: 6,
+        intensity_threshold: 0.02
+    }
+}

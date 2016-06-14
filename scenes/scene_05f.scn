@@ -78,27 +78,31 @@
     camera: ['FlatLensCamera', {
         transform: [
             'CombinedTransform', [
-                ['Translate', [0,0,1]],
-                ['Rotate', { axis: [0,1,0], angle: 0 }]
+                ['Translate', [0.5,0,1]],
+                ['Rotate', { axis: [0,1,0], angle: 45 }]
 
             ]
         ],
-        focus_dist: 4,
+        refraction_coeff: 2,
         geometry: {
             fovy: 90,
-            //aspect: 1.7777777,   // 16/9
             aspect: 1,
             dist: 0.2,
-            // resx: 800,
             resx: 450,
-            resy: 450
+            resy: 450,
+            refraction_coeff: 1.001,
+            focus_dist: 4
         },
         filter_image: false
-        // , write_rays: 'scene_05.rays'
-        , read_rays: 'scene_05.rays'
+        // , write_rays: 'scene_05f.rays'
+        , read_rays: 'scene_05f.rays'
     }],
+    imgproc: ['CombinedImageProcessor', [
+        ['ClampImage', 10],
+        ['LogScaleImage', 0.07]
+    ]],
     options: {
-        // max_rays: 10000000000,
+        // max_rays: 1000000000,
         max_rays: 0,
         max_reflections: 6,
         intensity_threshold: 0.02

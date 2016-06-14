@@ -111,11 +111,6 @@ private:
 
 REGISTER_GENERATOR(SimpleCamera)
 
-SimpleCamera::SimpleCamera() :
-    m_filterImage(true)
-{
-}
-
 Primitive::Ptr SimpleCamera::cameraPrimitive() const
 {
     return m_primitive;
@@ -154,7 +149,6 @@ void SimpleCamera::read(const QVariant &v)
     Camera::read(v);
 
     m_geometry = Geometry();
-    m_filterImage = true;
     m_raysOutputFileName.clear();
     m_raysInputFileName.clear();
 
@@ -169,7 +163,6 @@ void SimpleCamera::read(const QVariant &v)
         readOptionalProperty(g.resy, m, "resy");
         m_geometry = g;
     });
-    readOptionalProperty(m_filterImage, m, "filter_image");
     readOptionalProperty(m_raysOutputFileName, m, "write_rays");
     readOptionalProperty(m_raysInputFileName, m, "read_rays");
 }

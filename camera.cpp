@@ -82,14 +82,18 @@ QImage Camera::Canvas::toImage() const
 
     // Copy canvas pixels to the image
     uchar *bits = image.bits();
-    std::for_each(begin(), end(), [&minIntensity, &maxIntensity, &bits](const v3f& color) {
-        bits[3] = 0xff;
-        for (int i=0; i<3; ++i) {
-            auto normalizedIntensity = (color[i] - minIntensity) / (maxIntensity - minIntensity);
-            bits[2-i] = static_cast<uchar>(normalizedIntensity * 255.999);
+    v2i xy;
+    int idx;
+    for (xy[1]=m_size[1]-1; xy[1]>=0; --xy[1])
+        for (xy[0]=0, idx=index(xy); xy[0]<m_size[0]; ++xy[0], ++idx) {
+            bits[3] = 0xff;
+            for (int i=0; i<3; ++i) {
+                auto& color = pixel(idx);
+                auto normalizedIntensity = (color[i] - minIntensity) / (maxIntensity - minIntensity);
+                bits[2-i] = static_cast<uchar>(normalizedIntensity * 255.999);
+            }
+            bits += 4;
         }
-        bits += 4;
-    });
     return image;
 }
 

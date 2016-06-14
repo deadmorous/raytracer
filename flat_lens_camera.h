@@ -32,30 +32,58 @@ public:
 
         /// \brief Camera screen resolution in the y direction.
         int resy;
-        Geometry() : fovy(90.f), aspect(16.f/9.f), dist(1.f), resx(1600), resy(900) {}
+
+        float refractionCoefficient;
+        float focusingDistance;
+
+        // Computed values
+        float screenWidth;
+        float screenHeight;
+        float R;
+        float fx;
+        float matrixWidth;
+        float matrixHeight;
+
+        Geometry() :
+            fovy(90.f),
+            aspect(16.f/9.f),
+            dist(1.f),
+            resx(1600),
+            resy(900),
+            refractionCoefficient(2.f),
+            focusingDistance(10.f)
+        {
+            computeValues();
+        }
         Geometry(
                 float fovy,
                 float aspect,
                 float dist,
                 int resx,
-                int resy) :
+                int resy,
+                float refractionCoefficient,
+                float focusingDistance) :
             fovy(fovy),
             aspect(aspect),
             dist(dist),
             resx(resx),
-            resy(resy)
-        {}
-
-        float screenWidth() const {
-            return screenHeight() * aspect;
+            resy(resy),
+            refractionCoefficient(refractionCoefficient),
+            focusingDistance(focusingDistance)
+        {
+            computeValues();
         }
 
-        float screenHeight() const {
-            return dist * 2.f*sin(0.5f*deg2rad(fovy));
+        void computeValues() {
+            screenHeight = dist * 2.f*tan(0.5f*deg2rad(fovy));
+            screenWidth = screenHeight * aspect;
+            R = dist;
+            fx = 1.f / ((1.f-1.f/refractionCoefficient)/R - 1.f/(refractionCoefficient*focusingDistance));
+            matrixHeight = screenHeight * (fx-R) / R;
+            matrixWidth = screenWidth * (fx-R) / R;
         }
+
     };
-
-    FlatLensCamera();
 
     void clear();
 
@@ -71,8 +99,6 @@ public:
 private:
     Primitive::Ptr m_primitive;
     Geometry m_geometry;
-    float m_focusingDistance;
-    bool m_filterImage;
     QString m_raysInputFileName;
     Canvas m_canvas;
 };

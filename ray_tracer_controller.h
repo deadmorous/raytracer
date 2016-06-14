@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QThread>
+#include <QMutex>
 #include "image_processor.h"
 
 namespace raytracer {

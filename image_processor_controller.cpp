@@ -103,6 +103,12 @@ ImageProcessorController::ImageProcessorController(QObject *parent) :
     updateActions();
 }
 
+ImageProcessorController::~ImageProcessorController() {
+    // Note: Empty destructor is defined here because
+    // the destructor of std::unique_ptr<QMenu> wants QMenu
+    // to be complete.
+}
+
 QMenu *ImageProcessorController::menu() {
     return m_menu.get();
 }

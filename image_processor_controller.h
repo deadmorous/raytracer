@@ -61,6 +61,7 @@ class ImageProcessorController : public QObject
     Q_OBJECT
 public:
     explicit ImageProcessorController(QObject *parent = 0);
+    ~ImageProcessorController();
     QMenu *menu();
     ImageProcessor::Ptr imageProcessor() const;
 

@@ -52,11 +52,9 @@ public:
         }
 
         float screenHeight() const {
-            return dist * 2.f*sin(0.5f*deg2rad(fovy));
+            return dist * 2.f*tan(0.5f*deg2rad(fovy));
         }
     };
-
-    SimpleCamera();
 
     void clear();
 
@@ -72,7 +70,6 @@ public:
 private:
     Primitive::Ptr m_primitive;
     Geometry m_geometry;
-    bool m_filterImage;
     QString m_raysOutputFileName;
     QString m_raysInputFileName;
     Canvas m_canvas;
