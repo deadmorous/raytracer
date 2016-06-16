@@ -56,10 +56,6 @@ public:
             m_raysOutputFile.write(rd.rawData(), sizeof(rd));
         }
 
-//        if (ray.generation == 0)
-//            // Ignore direct rays from light source
-//            return;
-
         //*
         v2f re; // Screen coordinates of ray origin
         if (m_geom.focusingDistance > 0) {
