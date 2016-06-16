@@ -49,7 +49,6 @@ public:
             RayTracer& rayTracer) const
     {
         Q_UNUSED(rayTracer);
-        Q_UNUSED(surfacePoint)
 
         if (m_writeRays) {
             Camera::RayData rd(ray, sppos(surfacePoint));
@@ -61,7 +60,14 @@ public:
 //            return;
 
         //*
-        v2f re = conv<v2f>(m_ST * conv<v4f>(ray.origin));   // Screen coordinates of ray origin
+        v2f re; // Screen coordinates of ray origin
+        if (m_geom.focusingDistance > 0) {
+            v3f origin = sppos(surfacePoint);
+            float t = -1.f/dot(ray.dir, spnormal(surfacePoint));
+            Q_ASSERT(false);    // TODO
+        }
+        else
+            re = conv<v2f>(m_ST * conv<v4f>(ray.origin));
         /*/
         // No lens
         v2f re = sptex(surfacePoint);
@@ -161,6 +167,7 @@ void SimpleCamera::read(const QVariant &v)
         readOptionalProperty(g.dist, m, "dist");
         readOptionalProperty(g.resx, m, "resx");
         readOptionalProperty(g.resy, m, "resy");
+        readOptionalProperty(g.focusingDistance, m, "focus_dist");
         m_geometry = g;
     });
     readOptionalProperty(m_raysOutputFileName, m, "write_rays");

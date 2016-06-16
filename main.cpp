@@ -9,6 +9,10 @@
 #include <iostream>
 #include <iomanip>
 
+#if defined(__MINGW32__) && (__GNUC__ <= 4   ||   (__GNUC__ == 4 && __GNUC_MINOR__ <= 8))
+#define defaultfloat ""
+#endif
+
 int runInBatchMode(QString sceneFileName, QString imageFileName)
 {
     using namespace std;
