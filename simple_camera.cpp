@@ -27,7 +27,8 @@ public:
         m_raysOutputFileName(raysOutputFileName),
         m_canvas(canvas),
         m_transform(transform),
-        m_ST(projectionMatrix() * transform.inv())
+        m_invTransform(transform.inv()),
+        m_ST(projectionMatrix() * m_invTransform)
     {
         if (m_raysOutputFileName.isEmpty())
             m_writeRays = false;
@@ -63,8 +64,9 @@ public:
         v2f re; // Screen coordinates of ray origin
         if (m_geom.focusingDistance > 0) {
             v3f origin = sppos(surfacePoint);
-            float t = -1.f/dot(ray.dir, spnormal(surfacePoint));
-            Q_ASSERT(false);    // TODO
+            float t = m_geom.focusingDistance/(affine(m_invTransform)*ray.dir)[2];
+            origin -= t*ray.dir;
+            re = conv<v2f>(m_ST * conv<v4f>(origin));
         }
         else
             re = conv<v2f>(m_ST * conv<v4f>(ray.origin));
@@ -94,6 +96,7 @@ private:
     QString m_raysOutputFileName;
     Camera::Canvas& m_canvas;
     const m4f& m_transform;
+    m4f m_invTransform;
     bool m_writeRays;
     mutable QFile m_raysOutputFile;
 
